@@ -78,12 +78,12 @@ def export_pdf(data, filename, logo_path):
         # Style untuk bullet list
         bullet_style = ParagraphStyle(
             "bullet",
-            leftIndent=15,
+            leftIndent=40,
             fontName="Lato-Regular", 
             fontSize=12,  
             leading=18,
             alignment=TA_JUSTIFY,
-            firstLineIndent=15
+            firstLineIndent=-15
         )
         
         if isinstance(value, str):
