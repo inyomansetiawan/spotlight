@@ -110,7 +110,8 @@ def export_pdf(data, filename, logo_path):
         
                 # Jika bukan bullet atau numbered list, anggap sebagai teks biasa
                 in_numbered_list = False
-                elements_temp.append(Paragraph(line, answer_style2))
+                answer_style = answer_style1 if idx <= 4 else answer_style2
+                elements_temp.append(Paragraph(line, answer_style))
                 elements_temp.append(Spacer(1, 6))
         
             # Tambahkan elemen-elemen ke dalam elements utama
