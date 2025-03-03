@@ -71,7 +71,7 @@ def export_pdf(data, filename, logo_path):
             leftIndent=25,  # Geser isi bullet lebih ke kanan
             bulletIndent=15,  # Pastikan teks setelah bullet sejajar dengan benar
             spaceBefore=3,  # Spasi sebelum bullet
-            spaceAfter=3  # Spasi setelah bullet
+            spaceAfter=1.5  # Spasi setelah bullet
         )
         
         if isinstance(value, str):
