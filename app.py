@@ -107,8 +107,9 @@ def export_pdf(data, filename, logo_path):
                         in_numbered_list = True
         
                     last_number += 1  # Tambah angka secara manual
+                    number_text = f"<font name='Lato-Regular' size='12'>{last_number}</font>"
             
-                    elements_temp.append(Paragraph(text, numbering_style, bulletText=f"{last_number}."))
+                    elements_temp.append(Paragraph(text, numbering_style, bulletText=f"{number_text}."))
                     elements_temp.append(Spacer(1, 6))
                     continue
         
