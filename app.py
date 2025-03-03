@@ -60,30 +60,67 @@ def export_pdf(data, filename, logo_path):
     elements.append(Paragraph("Summary of Progress & Objectives Tracker", subtitle_style))
     elements.append(Spacer(1, 24))
 
-    # Isi laporan
-    for key, value in data.items():
-        question = Paragraph(f"<b>{key}</b>", ParagraphStyle("Question", parent=styles["Heading2"], fontName="Lato-Bold", textColor=DARK_BLUE, leading=18))
+    for idx, (key, value) in enumerate(data.items()):
+        question = Paragraph(f"<b>{key}</b>", ParagraphStyle("Question", parent=styles["Heading2"], fontName="Lato-Bold", alignment=TA_CENTER, textColor=DARK_BLUE, leading=18))
         elements.append(question)
         elements.append(Spacer(1, 6))
 
         if isinstance(value, str):
             lines = value.split("\n")
             bullet_items = []
+            numbered_items = []
+            centered_texts = []
+            is_numbered = True  # Default sebagai numbered list
+
             for line in lines:
                 line = line.strip()
                 if not line:
                     continue
 
-                if line.startswith("- "):  
-                    bullet_items.append(f"✔️ {line[2:]}")  
+                match = re.match(r"^(\d+)\.\s(.+)", line)  # Cek angka + titik + spasi
+                if match:
+                    _, text = match.groups()
+                    numbered_items.append(ListItem(Paragraph(text, answer_style2)))
+                elif line.startswith("- "):  # Bulleted list
+                    is_numbered = False
+                    bullet_items.append(ListItem(Paragraph(line[2:], answer_style2)))
                 else:
-                    bullet_items.append(line)
+                    is_numbered = False
+                    centered_texts.append(Paragraph(line, answer_style1))  # Teks biasa (tanpa bullet & numbering)
 
-            for item in bullet_items:
-                elements.append(Paragraph(item, answer_style))
-                elements.append(Spacer(1, 4))
+            # Tambahkan elemen berdasarkan jenisnya
+            if is_numbered and numbered_items:
+                elements.append(ListFlowable(
+                    numbered_items,
+                    bulletType="1",
+                    leftIndent=15,
+                    bulletFormat='%s.',  
+                    bulletFontName="Lato-Regular",  
+                    bulletFontSize=12,  
+                    bulletIndent=5  
+                ))
+                elements.append(Spacer(1, 6))  
+            
+            elif bullet_items:
+                elements.append(ListFlowable(
+                    bullet_items,
+                    bulletType="bullet",
+                    leftIndent=15,
+                    bulletFontName="Lato-Regular",  
+                    bulletFontSize=12,  
+                    bulletIndent=5  
+                ))
+                elements.append(Spacer(1, 6))  
+
+            # Tambahkan teks yang harus rata tengah secara terpisah
+            for centered_text in centered_texts:
+                elements.append(centered_text)
+                elements.append(Spacer(1, 6))
+
         else:
-            elements.append(Paragraph(str(value), answer_style))
+            answer_style = answer_style1 if idx <= 4 else answer_style2
+            answer = Paragraph(str(value), answer_style)
+            elements.append(answer)
 
         elements.append(Spacer(1, 12))
 
@@ -91,7 +128,7 @@ def export_pdf(data, filename, logo_path):
     elements.append(Spacer(1, 30))
     elements.append(Table([[""]], colWidths=[500], rowHeights=[1], style=[("BACKGROUND", (0, 0), (-1, -1), LIGHT_GRAY)]))
     elements.append(Spacer(1, 6))
-    footer_text = Paragraph("Laporan Tim Direktorat Analisis dan Pengembangan Statistik Tahun 2025", ParagraphStyle("Footer", parent=styles["Normal"], fontSize=10, textColor=colors.grey, alignment=TA_CENTER))
+    footer_text = Paragraph("Laporan Tim Direktorat Analisis dan Pengembangan Statistik", ParagraphStyle("Footer", parent=styles["Normal"], fontSize=10, textColor=colors.grey, alignment=TA_CENTER))
     elements.append(footer_text)
 
     doc.build(elements)
