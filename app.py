@@ -66,9 +66,11 @@ def export_pdf(data, filename, logo_path):
 
         if isinstance(value, str):
             lines = value.split("\n")
-            parsed_items = []  # Menyimpan elemen dalam bentuk (index, type, content)
+            elements_temp = []  # Menyimpan elemen dalam urutan parsing
+            current_numbered = []
+            current_bulleted = []
         
-            for idx, line in enumerate(lines):
+            for line in lines:
                 line = line.strip()
                 if not line:
                     continue
@@ -77,74 +79,66 @@ def export_pdf(data, filename, logo_path):
                 match = re.match(r"^(\d+)\.\s+(.+)", line)
                 if match:
                     _, text = match.groups()
-                    parsed_items.append((idx, "numbered", ListItem(Paragraph(text, answer_style2))))
+        
+                    # Jika ada bullet list sebelumnya, tambahkan dulu ke elements
+                    if current_bulleted:
+                        elements_temp.append(ListFlowable(
+                            current_bulleted, bulletType="bullet", bulletFontSize=12
+                        ))
+                        elements_temp.append(Spacer(1, 6))
+                        current_bulleted = []
+        
+                    current_numbered.append(ListItem(Paragraph(text, answer_style2)))
                     continue
         
-                # Cek apakah ini bulleted list (- ...)
-                if line.startswith("- "):
-                    parsed_items.append((idx, "bullet", ListItem(Paragraph(line[2:], answer_style2))))
+                # Cek apakah ini bulleted list (- atau • ...)
+                if re.match(r"^[-•]\s+(.+)", line):
+                    text = line[2:]
+        
+                    # Jika ada numbered list sebelumnya, tambahkan dulu ke elements
+                    if current_numbered:
+                        elements_temp.append(ListFlowable(
+                            current_numbered, bulletType="1", bulletFormat="%s.", bulletFontSize=12
+                        ))
+                        elements_temp.append(Spacer(1, 6))
+                        current_numbered = []
+        
+                    current_bulleted.append(ListItem(Paragraph(text, answer_style2)))
                     continue
         
                 # Jika bukan bullet atau numbered list, anggap sebagai teks biasa
-                parsed_items.append((idx, "text", Paragraph(line, answer_style1)))
+                if current_numbered:
+                    elements_temp.append(ListFlowable(
+                        current_numbered, bulletType="1", bulletFormat="%s.", bulletFontSize=12
+                    ))
+                    elements_temp.append(Spacer(1, 6))
+                    current_numbered = []
         
-            # List untuk menyimpan elemen dalam urutan yang benar
-            ordered_elements = []
-            temp_numbered = []
-            temp_bulleted = []
+                if current_bulleted:
+                    elements_temp.append(ListFlowable(
+                        current_bulleted, bulletType="bullet", bulletFontSize=12
+                    ))
+                    elements_temp.append(Spacer(1, 6))
+                    current_bulleted = []
         
-            # Proses urutan sesuai indeks asli
-            for idx, item_type, content in parsed_items:
-                if item_type == "numbered":
-                    temp_numbered.append(content)
-                elif item_type == "bullet":
-                    temp_bulleted.append(content)
-                else:  # Teks biasa
-                    # Jika ada numbered list yang tertunda, tambahkan dulu
-                    if temp_numbered:
-                        ordered_elements.append(ListFlowable(
-                            temp_numbered,
-                            bulletType="1",
-                            bulletFormat="%s.",
-                            bulletFontSize=12
-                        ))
-                        ordered_elements.append(Spacer(1, 6))
-                        temp_numbered = []
+                elements_temp.append(Paragraph(line, answer_style1))
+                elements_temp.append(Spacer(1, 6))
         
-                    # Jika ada bullet list yang tertunda, tambahkan dulu
-                    if temp_bulleted:
-                        ordered_elements.append(ListFlowable(
-                            temp_bulleted,
-                            bulletType="bullet",
-                            bulletFontSize=12
-                        ))
-                        ordered_elements.append(Spacer(1, 6))
-                        temp_bulleted = []
-        
-                    # Tambahkan teks biasa
-                    ordered_elements.append(content)
-                    ordered_elements.append(Spacer(1, 6))
-        
-            # Pastikan list yang belum dimasukkan tetap ditambahkan
-            if temp_numbered:
-                ordered_elements.append(ListFlowable(
-                    temp_numbered,
-                    bulletType="1",
-                    bulletFormat="%s.",
-                    bulletFontSize=12
+            # Masukkan sisa numbered atau bulleted list yang belum ditambahkan
+            if current_numbered:
+                elements_temp.append(ListFlowable(
+                    current_numbered, bulletType="1", bulletFormat="%s.", bulletFontSize=12
                 ))
-                ordered_elements.append(Spacer(1, 6))
+                elements_temp.append(Spacer(1, 6))
         
-            if temp_bulleted:
-                ordered_elements.append(ListFlowable(
-                    temp_bulleted,
-                    bulletType="bullet",
-                    bulletFontSize=12
+            if current_bulleted:
+                elements_temp.append(ListFlowable(
+                    current_bulleted, bulletType="bullet", bulletFontSize=12
                 ))
-                ordered_elements.append(Spacer(1, 6))
+                elements_temp.append(Spacer(1, 6))
         
-            # Masukkan hasil akhir ke elements
-            elements.extend(ordered_elements)
+            # Tambahkan elemen-elemen yang sudah tersusun dengan benar ke elements
+            elements.extend(elements_temp)
         
         else:
             answer_style = answer_style1 if idx <= 4 else answer_style2
