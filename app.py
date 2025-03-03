@@ -71,43 +71,43 @@ def export_pdf(data, filename, logo_path):
             structured_items = []
             current_list_item = None
             current_bullet_item = None
-    
+        
             for line in lines:
                 line = line.strip()
                 if not line:
                     continue
-    
+        
                 numbered_match = re.match(r"^(\d+)\.\s(.+)", line)  # Format "1. teks"
                 bullet_match = re.match(r"^- (.+)", line)  # Format "- teks"
-    
+        
                 if bullet_match:  
                     if current_bullet_item:
                         structured_items.append(current_bullet_item)
-    
+                    
                     bullet_text = bullet_match.group(1)
                     current_bullet_item = ListItem(Paragraph(bullet_text, answer_style2))
                     current_bullet_item.sub_items = []
-    
+        
                 elif numbered_match:
                     number, text = numbered_match.groups()
                     list_item = ListItem(Paragraph(text, answer_style2))
-    
+        
                     if current_bullet_item:  
                         current_bullet_item.sub_items.append(list_item)  
                     else:
                         structured_items.append(list_item)
-    
+        
                 else:  
                     structured_items.append(Paragraph(line, answer_style1))
-    
+        
             if current_bullet_item:
                 structured_items.append(current_bullet_item)
-    
+        
             for item in structured_items:
                 if isinstance(item, ListItem) and hasattr(item, "sub_items") and item.sub_items:
                     elements.append(ListFlowable(
                         [item] + item.sub_items,
-                        bulletType="bullet" if item.sub_items[0].getText().startswith("-") else "1",
+                        bulletType="bullet" if (item.sub_items and hasattr(item.sub_items[0], "getText") and item.sub_items[0].getText().startswith("-")) else "1",
                         leftIndent=15,
                         bulletFontName="Lato-Regular",
                         bulletFontSize=12,
@@ -116,19 +116,19 @@ def export_pdf(data, filename, logo_path):
                 elif isinstance(item, ListItem):
                     elements.append(ListFlowable(
                         [item],
-                        bulletType="bullet" if item.getText().startswith("-") else "1",
+                        bulletType="bullet" if (hasattr(item, "getText") and item.getText().startswith("-")) else "1",
                         leftIndent=15,
                         bulletFontName="Lato-Regular",
                         bulletFontSize=12,
                         bulletIndent=5
                     ))
                 elements.append(Spacer(1, 6))  
-    
+        
         else:
             answer_style = answer_style1 if len(elements) <= 4 else answer_style2
             answer = Paragraph(str(value), answer_style)
             elements.append(answer)
-    
+        
         elements.append(Spacer(1, 12))
 
     # Footer dengan garis pemisah opacity rendah
