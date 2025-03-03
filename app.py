@@ -47,7 +47,7 @@ def export_pdf(data, filename):
     elements.append(title)
     elements.append(Spacer(1, 6))
     elements.append(subtitle)
-    elements.append(Spacer(1, 30))
+    elements.append(Spacer(1, 36))
 
     for idx, (key, value) in enumerate(data.items()):
         question = Paragraph(f"<b>{key}</b>", ParagraphStyle("Question", parent=styles["Heading2"], fontName="Lato-Bold", alignment=TA_CENTER, leading=18))
