@@ -45,9 +45,9 @@ def export_pdf(data, filename):
     title = Paragraph("SPOT Light", title_style)
     subtitle = Paragraph("Summary of Progress & Objectives Tracker", subtitle_style)
     elements.append(title)
-    elements.append(Spacer(1, 4))
+    elements.append(Spacer(1, 6))
     elements.append(subtitle)
-    elements.append(Spacer(1, 24))
+    elements.append(Spacer(1, 30))
 
     for idx, (key, value) in enumerate(data.items()):
         question = Paragraph(f"<b>{key}</b>", ParagraphStyle("Question", parent=styles["Heading2"], fontName="Lato-Bold", alignment=TA_CENTER, leading=18))
