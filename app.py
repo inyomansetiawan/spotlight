@@ -69,6 +69,7 @@ def export_pdf(data, filename, logo_path):
             elements_temp = []  # Menyimpan elemen dalam urutan parsing
             current_numbered = []
             current_bulleted = []
+            last_number = 0  # Menyimpan nomor terakhir dari numbered list
         
             for line in lines:
                 line = line.strip()
@@ -78,9 +79,10 @@ def export_pdf(data, filename, logo_path):
                 # Cek apakah ini numbered list (1., 2., dst.)
                 match = re.match(r"^(\d+)\.\s+(.+)", line)
                 if match:
-                    _, text = match.groups()
+                    number, text = match.groups()
+                    number = int(number)
         
-                    # Jika ada bullet list sebelumnya, tambahkan dulu ke elements
+                    # Jika ada bullet list sebelumnya, tambahkan ke elements
                     if current_bulleted:
                         elements_temp.append(ListFlowable(
                             current_bulleted, bulletType="bullet", bulletFontSize=12
@@ -88,7 +90,12 @@ def export_pdf(data, filename, logo_path):
                         elements_temp.append(Spacer(1, 6))
                         current_bulleted = []
         
+                    # Jika numbering bukan kelanjutan, reset numbering
+                    if number != last_number + 1:
+                        last_number = number  # Mulai ulang numbering
+        
                     current_numbered.append(ListItem(Paragraph(text, answer_style2)))
+                    last_number += 1  # Update last_number agar berlanjut
                     continue
         
                 # Cek apakah ini bulleted list (- atau • ...)
@@ -146,7 +153,6 @@ def export_pdf(data, filename, logo_path):
             elements.append(answer)
         
         elements.append(Spacer(1, 12))
-
     # Footer
     elements.append(Spacer(1, 30))
     elements.append(Table([[""]], colWidths=[500], rowHeights=[1], style=[("BACKGROUND", (0, 0), (-1, -1), LIGHT_GRAY)]))
