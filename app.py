@@ -52,13 +52,12 @@ def export_pdf(data, filename, logo_path):
     # Header: Logo & Judul
     if logo_path:
         logo = Image(logo_path, width=120, height=60)  # Sesuaikan ukuran logo
-        header_table = Table([[logo, Paragraph("<b>SPOT Light</b><br/>Summary of Progress & Objectives Tracker", title_style)]], colWidths=[80, 400])
-        elements.append(header_table)
-        elements.append(Spacer(1, 20))
-    else:
-        elements.append(Paragraph("SPOT Light", title_style))
-        elements.append(Paragraph("Summary of Progress & Objectives Tracker", subtitle_style))
-        elements.append(Spacer(1, 20))
+        elements.append(logo)  # Tambahkan logo terlebih dahulu
+        elements.append(Spacer(1, 10))  # Beri jarak sebelum judul
+    
+    elements.append(Paragraph("SPOT Light", title_style))
+    elements.append(Paragraph("Summary of Progress & Objectives Tracker", subtitle_style))
+    elements.append(Spacer(1, 20))
 
     # Isi laporan
     for key, value in data.items():
