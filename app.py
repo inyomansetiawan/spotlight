@@ -87,7 +87,7 @@ def export_pdf(data, filename, logo_path):
                     bullet_items.append(ListItem(Paragraph(line[2:], answer_style2)))
                 else:
                     is_numbered = False
-                    bullet_items.append(ListItem(Paragraph(line[2:], answer_style2)))
+                    centered_texts.append(Paragraph(line, answer_style1))  # Teks biasa (tanpa bullet & numbering)
 
             # Tambahkan elemen berdasarkan jenisnya
             if is_numbered and numbered_items:
@@ -111,7 +111,13 @@ def export_pdf(data, filename, logo_path):
                     bulletFontSize=12,  
                     bulletIndent=5  
                 ))
+                elements.append(Spacer(1, 6))  
+
+            # Tambahkan teks yang harus rata tengah secara terpisah
+            for centered_text in centered_texts:
+                elements.append(centered_text)
                 elements.append(Spacer(1, 6))
+
         else:
             answer_style = answer_style1 if idx <= 4 else answer_style2
             answer = Paragraph(str(value), answer_style)
