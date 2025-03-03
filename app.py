@@ -71,25 +71,44 @@ def export_pdf(data, filename, logo_path):
             bullet_items = []
             numbered_items = []
             centered_texts = []
-            is_numbered = True  # Default sebagai numbered list
-    
+            current_numbered_heading = None  # Simpan heading terbaru
+            bullet_dict = {}  # Dictionary untuk menyimpan bullet berdasarkan nomor heading
+            
             for line in lines:
                 line = line.strip()
                 if not line:
                     continue
-    
-                # Cek format numbering (misal: "1. ..." atau "1) ...")
-                match = re.match(r"^(\d+)[.)]\s(.+)", line)  
+            
+                match = re.match(r"^(\d+)\.\s(.+)", line)  # Cek apakah ini numbered list (1. sesuatu)
                 if match:
-                    _, text = match.groups()
-                    numbered_items.append(ListItem(Paragraph(text, answer_style2)))
-                # Cek format bullet (misal: "- ...", "* ...", atau "• ...")
-                elif re.match(r"^[-*•]\s(.+)", line):
-                    bullet_items.append(ListItem(Paragraph(line[2:], answer_style2)))
-                else:
-                    is_numbered = False
-                    centered_texts.append(Paragraph(line, answer_style1))  # Teks biasa (tanpa bullet & numbering)
-    
+                    num, text = match.groups()
+                    current_numbered_heading = text  # Simpan heading saat ini
+                    bullet_dict[current_numbered_heading] = []  # Inisialisasi list bullet untuk heading ini
+                    elements.append(Paragraph(f"<b>{num}. {text}</b>", answer_style1))  # Tambahkan heading ke PDF
+                    elements.append(Spacer(1, 6))
+                
+                elif line.startswith("- "):  # Jika ini bullet list
+                    if current_numbered_heading:
+                        bullet_dict[current_numbered_heading].append(Paragraph(line[2:], answer_style2))  # Tambahkan bullet sesuai heading
+                    else:
+                        elements.append(Paragraph(line[2:], answer_style2))  # Jika tidak ada heading sebelumnya, tambahkan langsung
+                    
+                else:  # Jika bukan numbered atau bullet, tambahkan sebagai teks biasa
+                    elements.append(Paragraph(line, answer_style1))
+                    elements.append(Spacer(1, 6))
+            
+            # Setelah parsing selesai, tambahkan bullet list di bawah heading yang sesuai
+            for heading, bullets in bullet_dict.items():
+                elements.append(ListFlowable(
+                    [ListItem(bullet) for bullet in bullets],
+                    bulletType="bullet",
+                    leftIndent=15,
+                    bulletFontName="Lato-Regular",
+                    bulletFontSize=12,
+                    bulletIndent=5
+                ))
+                elements.append(Spacer(1, 6))
+
             # Tambahkan elemen berdasarkan jenisnya
             if numbered_items:
                 elements.append(ListFlowable(
