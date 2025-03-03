@@ -107,7 +107,7 @@ def export_pdf(data, filename, logo_path):
                 if isinstance(item, ListItem) and hasattr(item, "sub_items") and item.sub_items:
                     elements.append(ListFlowable(
                         [item] + item.sub_items,
-                        bulletType="bullet" if item.sub_items[0].text.startswith("-") else "1",
+                        bulletType="bullet" if item.sub_items[0].getText().startswith("-") else "1",
                         leftIndent=15,
                         bulletFontName="Lato-Regular",
                         bulletFontSize=12,
@@ -116,15 +116,12 @@ def export_pdf(data, filename, logo_path):
                 elif isinstance(item, ListItem):
                     elements.append(ListFlowable(
                         [item],
-                        bulletType="bullet" if item.text.startswith("-") else "1",
+                        bulletType="bullet" if item.getText().startswith("-") else "1",
                         leftIndent=15,
                         bulletFontName="Lato-Regular",
                         bulletFontSize=12,
                         bulletIndent=5
                     ))
-                elif isinstance(item, Paragraph):
-                    elements.append(item)
-    
                 elements.append(Spacer(1, 6))  
     
         else:
