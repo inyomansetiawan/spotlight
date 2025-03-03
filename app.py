@@ -66,61 +66,91 @@ def export_pdf(data, filename, logo_path):
 
         if isinstance(value, str):
             lines = value.split("\n")
-            numbered_items = []
-            bullet_items = []
-            normal_texts = []
-            last_list_type = None  # Menyimpan jenis list terakhir yang digunakan
-            
-            for line in lines:
+            parsed_items = []  # Menyimpan elemen dalam bentuk (index, type, content)
+        
+            for idx, line in enumerate(lines):
                 line = line.strip()
                 if not line:
                     continue
-
+        
                 # Cek apakah ini numbered list (1., 2., dst.)
                 match = re.match(r"^(\d+)\.\s+(.+)", line)
                 if match:
                     _, text = match.groups()
-                    numbered_items.append(ListItem(Paragraph(text, answer_style2)))
-                    last_list_type = "numbered"
+                    parsed_items.append((idx, "numbered", ListItem(Paragraph(text, answer_style2))))
                     continue
-
+        
                 # Cek apakah ini bulleted list (- ...)
                 if line.startswith("- "):
-                    bullet_items.append(ListItem(Paragraph(line[2:], answer_style2)))
-                    last_list_type = "bullet"
+                    parsed_items.append((idx, "bullet", ListItem(Paragraph(line[2:], answer_style2))))
                     continue
-
+        
                 # Jika bukan bullet atau numbered list, anggap sebagai teks biasa
-                normal_texts.append(Paragraph(line, answer_style1))
-                last_list_type = "text"
-
-            # Masukkan elemen-elemen dalam urutan yang benar
-            if numbered_items:
-                elements.append(ListFlowable(
-                    numbered_items,
+                parsed_items.append((idx, "text", Paragraph(line, answer_style1)))
+        
+            # List untuk menyimpan elemen dalam urutan yang benar
+            ordered_elements = []
+            temp_numbered = []
+            temp_bulleted = []
+        
+            # Proses urutan sesuai indeks asli
+            for idx, item_type, content in parsed_items:
+                if item_type == "numbered":
+                    temp_numbered.append(content)
+                elif item_type == "bullet":
+                    temp_bulleted.append(content)
+                else:  # Teks biasa
+                    # Jika ada numbered list yang tertunda, tambahkan dulu
+                    if temp_numbered:
+                        ordered_elements.append(ListFlowable(
+                            temp_numbered,
+                            bulletType="1",
+                            bulletFormat="%s.",
+                            bulletFontSize=12
+                        ))
+                        ordered_elements.append(Spacer(1, 6))
+                        temp_numbered = []
+        
+                    # Jika ada bullet list yang tertunda, tambahkan dulu
+                    if temp_bulleted:
+                        ordered_elements.append(ListFlowable(
+                            temp_bulleted,
+                            bulletType="bullet",
+                            bulletFontSize=12
+                        ))
+                        ordered_elements.append(Spacer(1, 6))
+                        temp_bulleted = []
+        
+                    # Tambahkan teks biasa
+                    ordered_elements.append(content)
+                    ordered_elements.append(Spacer(1, 6))
+        
+            # Pastikan list yang belum dimasukkan tetap ditambahkan
+            if temp_numbered:
+                ordered_elements.append(ListFlowable(
+                    temp_numbered,
                     bulletType="1",
                     bulletFormat="%s.",
                     bulletFontSize=12
                 ))
-                elements.append(Spacer(1, 6))
-
-            if bullet_items:
-                elements.append(ListFlowable(
-                    bullet_items,
+                ordered_elements.append(Spacer(1, 6))
+        
+            if temp_bulleted:
+                ordered_elements.append(ListFlowable(
+                    temp_bulleted,
                     bulletType="bullet",
                     bulletFontSize=12
                 ))
-                elements.append(Spacer(1, 6))
-
-            for text in normal_texts:
-                elements.append(text)
-                elements.append(Spacer(1, 6))
-
+                ordered_elements.append(Spacer(1, 6))
+        
+            # Masukkan hasil akhir ke elements
+            elements.extend(ordered_elements)
+        
         else:
             answer_style = answer_style1 if idx <= 4 else answer_style2
             answer = Paragraph(str(value), answer_style)
             elements.append(answer)
-
+        
         elements.append(Spacer(1, 12))
 
     # Footer
