@@ -62,69 +62,69 @@ def export_pdf(data, filename, logo_path):
     elements.append(Spacer(1, 24))
 
     for idx, (key, value) in enumerate(data.items()):
-    question = Paragraph(f"<b>{key}</b>", ParagraphStyle("Question", parent=styles["Heading2"], fontName="Lato-Bold", alignment=TA_CENTER, textColor=DARK_BLUE, leading=18))
-    elements.append(question)
-    elements.append(Spacer(1, 6))
-
-    if isinstance(value, str):
-        lines = value.split("\n")
-        bullet_items = []
-        numbered_items = []
-        centered_texts = []
-        is_numbered = True  # Default sebagai numbered list
-
-        for line in lines:
-            line = line.strip()
-            if not line:
-                continue
-
-            # Cek format numbering (misal: "1. ..." atau "1) ...")
-            match = re.match(r"^(\d+)[.)]\s(.+)", line)  
-            if match:
-                _, text = match.groups()
-                numbered_items.append(ListItem(Paragraph(text, answer_style2)))
-            # Cek format bullet (misal: "- ...", "* ...", atau "• ...")
-            elif re.match(r"^[-*•]\s(.+)", line):
-                bullet_items.append(ListItem(Paragraph(line[2:], answer_style2)))
-            else:
-                is_numbered = False
-                centered_texts.append(Paragraph(line, answer_style1))  # Teks biasa (tanpa bullet & numbering)
-
-        # Tambahkan elemen berdasarkan jenisnya
-        if numbered_items:
-            elements.append(ListFlowable(
-                numbered_items,
-                bulletType="1",
-                leftIndent=15,
-                bulletFormat='%s.',  
-                bulletFontName="Lato-Regular",  
-                bulletFontSize=12,  
-                bulletIndent=5  
-            ))
-            elements.append(Spacer(1, 6))  
-        
-        if bullet_items:
-            elements.append(ListFlowable(
-                bullet_items,
-                bulletType="bullet",
-                leftIndent=15,
-                bulletFontName="Lato-Regular",  
-                bulletFontSize=12,  
-                bulletIndent=5  
-            ))
-            elements.append(Spacer(1, 6))  
-
-        # Tambahkan teks yang harus rata tengah secara terpisah
-        for centered_text in centered_texts:
-            elements.append(centered_text)
-            elements.append(Spacer(1, 6))
-
-    else:
-        answer_style = answer_style1 if idx <= 4 else answer_style2
-        answer = Paragraph(str(value), answer_style)
-        elements.append(answer)
-
-    elements.append(Spacer(1, 12))
+        question = Paragraph(f"<b>{key}</b>", ParagraphStyle("Question", parent=styles["Heading2"], fontName="Lato-Bold", alignment=TA_CENTER, textColor=DARK_BLUE, leading=18))
+        elements.append(question)
+        elements.append(Spacer(1, 6))
+    
+        if isinstance(value, str):
+            lines = value.split("\n")
+            bullet_items = []
+            numbered_items = []
+            centered_texts = []
+            is_numbered = True  # Default sebagai numbered list
+    
+            for line in lines:
+                line = line.strip()
+                if not line:
+                    continue
+    
+                # Cek format numbering (misal: "1. ..." atau "1) ...")
+                match = re.match(r"^(\d+)[.)]\s(.+)", line)  
+                if match:
+                    _, text = match.groups()
+                    numbered_items.append(ListItem(Paragraph(text, answer_style2)))
+                # Cek format bullet (misal: "- ...", "* ...", atau "• ...")
+                elif re.match(r"^[-*•]\s(.+)", line):
+                    bullet_items.append(ListItem(Paragraph(line[2:], answer_style2)))
+                else:
+                    is_numbered = False
+                    centered_texts.append(Paragraph(line, answer_style1))  # Teks biasa (tanpa bullet & numbering)
+    
+            # Tambahkan elemen berdasarkan jenisnya
+            if numbered_items:
+                elements.append(ListFlowable(
+                    numbered_items,
+                    bulletType="1",
+                    leftIndent=15,
+                    bulletFormat='%s.',  
+                    bulletFontName="Lato-Regular",  
+                    bulletFontSize=12,  
+                    bulletIndent=5  
+                ))
+                elements.append(Spacer(1, 6))  
+            
+            if bullet_items:
+                elements.append(ListFlowable(
+                    bullet_items,
+                    bulletType="bullet",
+                    leftIndent=15,
+                    bulletFontName="Lato-Regular",  
+                    bulletFontSize=12,  
+                    bulletIndent=5  
+                ))
+                elements.append(Spacer(1, 6))  
+    
+            # Tambahkan teks yang harus rata tengah secara terpisah
+            for centered_text in centered_texts:
+                elements.append(centered_text)
+                elements.append(Spacer(1, 6))
+    
+        else:
+            answer_style = answer_style1 if idx <= 4 else answer_style2
+            answer = Paragraph(str(value), answer_style)
+            elements.append(answer)
+    
+        elements.append(Spacer(1, 12))
 
     # Footer dengan garis pemisah opacity rendah
     elements.append(Spacer(1, 30))
