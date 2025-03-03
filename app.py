@@ -111,7 +111,7 @@ def export_pdf(data, filename, logo_path):
                     last_number += 1  # Tambah angka secara manual
 
                     # Format nomor dengan HTML agar bisa diatur ukuran dan font-nya
-                    number_text = f"<font name='Lato-Regular' size='12'>{last_number}.\t</font>"
+                    number_text = f"<font name='Lato-Regular' size='12'>{last_number}.&nbsp;</font>"
                     
                     # Gabungkan nomor dengan teks utama
                     formatted_text = f"{number_text} {text}"
@@ -126,7 +126,7 @@ def export_pdf(data, filename, logo_path):
                     in_numbered_list = False  
 
                     # Buat bullet dengan format HTML agar ukurannya bisa diatur
-                    bullet_text = "<font name='Lato-Regular' size='12'>•\t</font>"
+                    bullet_text = "<font name='Lato-Regular' size='12'>•&nbsp;</font>"
                     
                     # Gabungkan bullet dengan teks utama
                     formatted_bullet = f"{bullet_text} {text}"
