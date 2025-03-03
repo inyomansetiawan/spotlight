@@ -67,6 +67,7 @@ def export_pdf(data, filename, logo_path):
         # Style untuk numbered list
         numbering_style = ParagraphStyle(
             "numbering",
+            leftIndent=15,
             fontName="Lato-Regular", 
             fontSize=12,  
             leading=18,
@@ -109,11 +110,8 @@ def export_pdf(data, filename, logo_path):
 
                     # Ubah nomor menjadi teks yang diformat
                     number_text = f"<font name='Lato-Regular' size='12'>{last_number}.</font>"
-            
-                    # Gabungkan nomor yang sudah diformat dengan teks utama
-                    formatted_text = f"{number_text} {text}"
                     
-                    elements_temp.append(Paragraph(formatted_text, numbering_style))
+                    elements_temp.append(Paragraph(text, numbering_style, bulletText=number_text))
                     elements_temp.append(Spacer(1, 6))
                     continue
         
