@@ -62,7 +62,7 @@ def export_pdf(data, filename, logo_path):
     for idx, (key, value) in enumerate(data.items()):
         question = Paragraph(f"<b>{key}</b>", ParagraphStyle("Question", parent=styles["Heading2"], fontName="Helvetica-Bold", alignment=TA_CENTER, textColor=DARK_BLUE, leading=18))
         elements.append(question)
-        elements.append(Spacer(1, 6))
+        elements.append(Spacer(1, 18))
 
         # Tambahkan style dengan indentasi untuk bullet list
         bullet_style = ParagraphStyle(
