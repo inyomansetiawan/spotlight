@@ -20,21 +20,6 @@ creds_dict = json.loads(st.secrets["gdrive_service_account"])
 creds = service_account.Credentials.from_service_account_info(creds_dict)
 drive_service = build("drive", "v3", credentials=creds)
 
-import io
-from reportlab.lib.pagesizes import A4
-from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
-from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer, ListFlowable, ListItem
-from reportlab.lib.enums import TA_CENTER, TA_JUSTIFY
-
-
-import io
-import re
-from reportlab.lib.pagesizes import A4
-from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
-from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer, ListFlowable, ListItem
-from reportlab.lib.enums import TA_CENTER, TA_JUSTIFY
-
-
 def export_pdf(data, filename):
     buffer = io.BytesIO()
     doc = SimpleDocTemplate(buffer, pagesize=A4, rightMargin=30, leftMargin=30, topMargin=50, bottomMargin=30)
@@ -74,9 +59,8 @@ def export_pdf(data, filename):
 
                 match = re.match(r"^(\d+)\.\s(.+)", line)  # Cek angka + titik + spasi
                 if match:
-                    num, text = match.groups()
-                    formatted_text = f"{num}. {text}"  # Tambahkan titik secara manual
-                    numbered_items.append(ListItem(Paragraph(formatted_text, answer_style2)))
+                    _, text = match.groups()  # Ambil hanya teks tanpa angka
+                    numbered_items.append(ListItem(Paragraph(text, answer_style2)))  # Gunakan numbering otomatis
                 elif line.startswith("- "):  # Bulleted list
                     is_numbered = False  # Jika ada bullet, maka bukan numbered list
                     bullet_items.append(ListItem(Paragraph(line[2:], answer_style2)))
@@ -85,7 +69,7 @@ def export_pdf(data, filename):
                     bullet_items.append(ListItem(Paragraph(line, answer_style2)))
 
             if is_numbered and numbered_items:
-                answer = ListFlowable(numbered_items, bulletType="1", leftIndent=20)  # Numbered list dengan angka & titik
+                answer = ListFlowable(numbered_items, bulletType="1", leftIndent=20)  # Gunakan numbering otomatis
             else:
                 answer = ListFlowable(bullet_items, bulletType="bullet", leftIndent=20)
 
