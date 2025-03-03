@@ -71,46 +71,24 @@ def export_pdf(data, filename, logo_path):
             bullet_items = []
             numbered_items = []
             centered_texts = []
-            parsed_items = []  # List untuk menyimpan semua hasil parsing dalam urutan aslinya
-            
-            is_numbered = None  # Tidak diasumsikan sebagai numbered list dari awal
-            
-            for idx, line in enumerate(lines):
+            is_numbered = True  # Default sebagai numbered list
+
+            for line in lines:
                 line = line.strip()
                 if not line:
-                    continue  # Lewati baris kosong
-            
-                match = re.match(r"^(\d+)\.\s(.+)", line)  # Cek apakah numbered list
+                    continue
+
+                match = re.match(r"^(\d+)\.\s(.+)", line)  # Cek angka + titik + spasi
                 if match:
                     _, text = match.groups()
-                    if is_numbered is False:  # Jika sebelumnya bullet list, pisahkan hasilnya
-                        parsed_items.extend(bullet_items)
-                        bullet_items = []  # Reset bullet list
-                    is_numbered = True
-                    item = ListItem(Paragraph(text, answer_style2))
-                    numbered_items.append(item)
-                    parsed_items.append(item)  # Simpan ke hasil akhir
-            
-                elif line.startswith("- "):  # Bullet list
-                    if is_numbered is True:  # Jika sebelumnya numbered list, pisahkan hasilnya
-                        parsed_items.extend(numbered_items)
-                        numbered_items = []  # Reset numbered list
+                    numbered_items.append(ListItem(Paragraph(text, answer_style2)))
+                elif line.startswith("- "):  # Bulleted list
                     is_numbered = False
-                    item = ListItem(Paragraph(line[2:], answer_style2))
-                    bullet_items.append(item)
-                    parsed_items.append(item)  # Simpan ke hasil akhir
-            
-                else:  # Teks biasa (tidak masuk dalam bullet atau numbered list)
-                    is_numbered = None
+                    bullet_items.append(ListItem(Paragraph(line[2:], answer_style2)))
+                else:
+                    is_numbered = False
                     answer_style1 = answer_style1 if idx <= 4 else answer_style2
-                    item = Paragraph(line, answer_style1)
-                    centered_texts.append(item)
-                    parsed_items.append(item)  # Simpan ke hasil akhir
-            
-            # Pastikan semua list yang tersisa masuk ke hasil akhir
-            parsed_items.extend(numbered_items)
-            parsed_items.extend(bullet_items)
-            parsed_items.extend(centered_texts)
+                    centered_texts.append(Paragraph(line, answer_style1))  # Teks biasa (tanpa bullet & numbering)
 
             # Tambahkan elemen berdasarkan jenisnya
             if is_numbered and numbered_items:
