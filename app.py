@@ -51,7 +51,7 @@ def export_pdf(data, filename, logo_path):
 
     # Header: Logo & Judul
     if logo_path:
-        logo = Image(logo_path, width=60, height=60)  # Sesuaikan ukuran logo
+        logo = Image(logo_path, width=120, height=60)  # Sesuaikan ukuran logo
         header_table = Table([[logo, Paragraph("<b>SPOT Light</b><br/>Summary of Progress & Objectives Tracker", title_style)]], colWidths=[80, 400])
         elements.append(header_table)
         elements.append(Spacer(1, 20))
