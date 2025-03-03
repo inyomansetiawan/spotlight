@@ -34,56 +34,6 @@ DARK_BLUE = colors.HexColor("#041c54")
 GOLD = colors.HexColor("#eeb308")
 LIGHT_GRAY = colors.HexColor("#DDDDDD")
 
-def parse_list(text, answer_style):
-    """
-    Mengubah teks menjadi ListFlowable yang mendukung nested bullet dan numbered list.
-    """
-    lines = text.split("\n")
-    items = []
-    current_numbered_list = []
-    current_bullet_list = []
-    last_numbered_item = None
-
-    for line in lines:
-        line = line.strip()
-        if not line:
-            continue
-
-        match = re.match(r"^(\d+)\.\s+(.+)", line)  # Cek apakah ini numbered list (1., 2., dst.)
-        if match:
-            # Jika ada bullet list sebelumnya, tambahkan sebagai elemen terpisah setelah numbered list
-            if last_numbered_item and current_bullet_list:
-                items.append(ListFlowable(current_bullet_list, bulletType="bullet", bulletFontSize=10))
-                current_bullet_list = []
-
-            _, text = match.groups()
-            last_numbered_item = ListItem(Paragraph(text, answer_style))
-            current_numbered_list.append(last_numbered_item)
-            continue
-
-        if line.startswith("- "):  # Jika bullet list (- ...)
-            if last_numbered_item:
-                # Masukkan bullet sebagai sublist dari numbered item terakhir
-                current_bullet_list.append(ListItem(Paragraph(line[2:], answer_style)))
-            else:
-                # Jika tidak ada numbered list sebelumnya, bullet list berdiri sendiri
-                items.append(ListItem(Paragraph(line[2:], answer_style)))
-            continue
-
-        # Jika bukan numbered/bullet list, anggap sebagai teks biasa
-        items.append(Paragraph(line, answer_style))
-
-    # Jika ada sisa bullet list setelah looping, tambahkan ke items
-    if last_numbered_item and current_bullet_list:
-        items.append(ListFlowable(current_bullet_list, bulletType="bullet", bulletFontSize=10))
-
-    # Tambahkan numbered list terakhir ke items
-    if current_numbered_list:
-        items.append(ListFlowable(current_numbered_list, bulletType="1", bulletFormat="%s.", bulletFontSize=10))
-
-    return items
-
-# Fungsi untuk ekspor PDF
 def export_pdf(data, filename, logo_path):
     buffer = io.BytesIO()
     doc = SimpleDocTemplate(buffer, pagesize=A4, rightMargin=60, leftMargin=60, topMargin=60, bottomMargin=60)
@@ -92,33 +42,79 @@ def export_pdf(data, filename, logo_path):
     styles = getSampleStyleSheet()
 
     # Gaya teks
-    title_style = ParagraphStyle("Title", parent=styles["Title"], fontName="Lato-Bold", fontSize=26, textColor=DARK_BLUE, alignment=TA_CENTER)
-    subtitle_style = ParagraphStyle("Subtitle", parent=styles["Heading2"], fontName="Lato-Bold", fontSize=18, textColor=TURQUOISE, alignment=TA_CENTER)
+    title_style = ParagraphStyle("Title", parent=styles["Title"], fontName="Helvetica-Bold", fontSize=26, textColor=DARK_BLUE, alignment=TA_CENTER)
+    subtitle_style = ParagraphStyle("Subtitle", parent=styles["Heading2"], fontName="Helvetica-Bold", fontSize=18, textColor=TURQUOISE, alignment=TA_CENTER)
 
-    # Style untuk jawaban (rata tengah dan justify) dengan leading 1.5x font size
-    answer_style1 = ParagraphStyle("answer_style1", parent=styles["Normal"], fontName="Lato-Regular", fontSize=12, alignment=TA_CENTER, leading=18)
-    answer_style2 = ParagraphStyle("answer_style2", parent=styles["Normal"], fontName="Lato-Regular", fontSize=12, alignment=TA_JUSTIFY, leading=18)
+    answer_style1 = ParagraphStyle("answer_style1", parent=styles["Normal"], fontName="Helvetica", fontSize=12, alignment=TA_CENTER, leading=18)
+    answer_style2 = ParagraphStyle("answer_style2", parent=styles["Normal"], fontName="Helvetica", fontSize=12, alignment=TA_JUSTIFY, leading=18)
 
     # Header: Logo & Judul
     if logo_path:
-        logo = Image(logo_path, width=102.3, height=43.1)  # Sesuaikan ukuran logo
-        elements.append(logo)  # Tambahkan logo terlebih dahulu
-        elements.append(Spacer(1, 20))  # Beri jarak sebelum judul
-      
+        logo = Image(logo_path, width=102.3, height=43.1)
+        elements.append(logo)
+        elements.append(Spacer(1, 20))
+
     elements.append(Paragraph("SPOT Light", title_style))
-    elements.append(Spacer(1, 6))  # Beri jarak sebelum elemen berikutnya
+    elements.append(Spacer(1, 6))
     elements.append(Paragraph("Summary of Progress & Objectives Tracker", subtitle_style))
     elements.append(Spacer(1, 24))
 
     for idx, (key, value) in enumerate(data.items()):
-        question = Paragraph(f"<b>{key}</b>", ParagraphStyle("Question", parent=styles["Heading2"], fontName="Lato-Bold", alignment=TA_CENTER, textColor=DARK_BLUE, leading=18))
+        question = Paragraph(f"<b>{key}</b>", ParagraphStyle("Question", parent=styles["Heading2"], fontName="Helvetica-Bold", alignment=TA_CENTER, textColor=DARK_BLUE, leading=18))
         elements.append(question)
         elements.append(Spacer(1, 6))
 
         if isinstance(value, str):
-            list_elements = parse_list(value, answer_style2)
-            elements.extend(list_elements)
-            elements.append(Spacer(1, 6))
+            lines = value.split("\n")
+            numbered_items = []
+            bullet_items = []
+            normal_texts = []
+            last_list_type = None  # Menyimpan jenis list terakhir yang digunakan
+            
+            for line in lines:
+                line = line.strip()
+                if not line:
+                    continue
+
+                # Cek apakah ini numbered list (1., 2., dst.)
+                match = re.match(r"^(\d+)\.\s+(.+)", line)
+                if match:
+                    _, text = match.groups()
+                    numbered_items.append(ListItem(Paragraph(text, answer_style2)))
+                    last_list_type = "numbered"
+                    continue
+
+                # Cek apakah ini bulleted list (- ...)
+                if line.startswith("- "):
+                    bullet_items.append(ListItem(Paragraph(line[2:], answer_style2)))
+                    last_list_type = "bullet"
+                    continue
+
+                # Jika bukan bullet atau numbered list, anggap sebagai teks biasa
+                normal_texts.append(Paragraph(line, answer_style1))
+                last_list_type = "text"
+
+            # Masukkan elemen-elemen dalam urutan yang benar
+            if numbered_items:
+                elements.append(ListFlowable(
+                    numbered_items,
+                    bulletType="1",
+                    bulletFormat="%s.",
+                    bulletFontSize=12
+                ))
+                elements.append(Spacer(1, 6))
+
+            if bullet_items:
+                elements.append(ListFlowable(
+                    bullet_items,
+                    bulletType="bullet",
+                    bulletFontSize=12
+                ))
+                elements.append(Spacer(1, 6))
+
+            for text in normal_texts:
+                elements.append(text)
+                elements.append(Spacer(1, 6))
 
         else:
             answer_style = answer_style1 if idx <= 4 else answer_style2
@@ -127,7 +123,7 @@ def export_pdf(data, filename, logo_path):
 
         elements.append(Spacer(1, 12))
 
-    # Footer dengan garis pemisah opacity rendah
+    # Footer
     elements.append(Spacer(1, 30))
     elements.append(Table([[""]], colWidths=[500], rowHeights=[1], style=[("BACKGROUND", (0, 0), (-1, -1), LIGHT_GRAY)]))
     elements.append(Spacer(1, 6))
