@@ -29,8 +29,8 @@ pdfmetrics.registerFont(TTFont("Lato-Regular", "Lato-Regular.ttf"))
 pdfmetrics.registerFont(TTFont("Lato-Bold", "Lato-Bold.ttf"))
 
 # Warna sesuai request
-TURQUOISE = colors.HexColor("#40E0D0")
-DARK_BLUE = colors.HexColor("#003366")
+TURQUOISE = colors.HexColor("#0a5692")
+DARK_BLUE = colors.HexColor("#041c54")
 GOLD = colors.HexColor("#FFD700")
 LIGHT_GRAY = colors.HexColor("#DDDDDD")
 
