@@ -68,7 +68,7 @@ def export_pdf(data, filename, logo_path):
         bullet_style = ParagraphStyle(
             "bullet",
             parent=answer_style2,  # Warisi style utama
-            leftIndent=20  # Indentasi 20 pt ke kanan
+            leftIndent=15  # Indentasi 15 pt ke kanan
         )
         
         if isinstance(value, str):
