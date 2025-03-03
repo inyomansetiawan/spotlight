@@ -72,17 +72,20 @@ def export_pdf(data, filename):
                 if not line:
                     continue
 
-                if re.match(r"^\d+\.\s", line):  # Numbered list (1. text, 2. text, etc.)
-                    numbered_items.append(ListItem(Paragraph(line[3:], answer_style2)))
+                match = re.match(r"^(\d+)\.\s(.+)", line)  # Cek angka + titik + spasi
+                if match:
+                    num, text = match.groups()
+                    formatted_text = f"{num}. {text}"  # Tambahkan titik secara manual
+                    numbered_items.append(ListItem(Paragraph(formatted_text, answer_style2)))
                 elif line.startswith("- "):  # Bulleted list
-                    is_numbered = False  # If there's a bullet, we assume this is not numbered
+                    is_numbered = False  # Jika ada bullet, maka bukan numbered list
                     bullet_items.append(ListItem(Paragraph(line[2:], answer_style2)))
                 else:
                     is_numbered = False
                     bullet_items.append(ListItem(Paragraph(line, answer_style2)))
 
             if is_numbered and numbered_items:
-                answer = ListFlowable(numbered_items, bulletType="1", leftIndent=20)
+                answer = ListFlowable(numbered_items, bulletType="1", leftIndent=20)  # Numbered list dengan angka & titik
             else:
                 answer = ListFlowable(bullet_items, bulletType="bullet", leftIndent=20)
 
@@ -96,7 +99,6 @@ def export_pdf(data, filename):
     doc.build(elements)
     buffer.seek(0)
     return buffer
-
 
 def upload_to_drive(file_buffer, filename):
     file_metadata = {
