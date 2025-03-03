@@ -51,7 +51,7 @@ def export_pdf(data, filename, logo_path):
 
     # Header: Logo & Judul
     if logo_path:
-        logo = Image(logo_path, width=78.4, height=44.6)  # Sesuaikan ukuran logo
+        logo = Image(logo_path, width=75.6, height=31.8)  # Sesuaikan ukuran logo
         elements.append(logo)  # Tambahkan logo terlebih dahulu
         elements.append(Spacer(1, 16))  # Beri jarak sebelum judul
     
