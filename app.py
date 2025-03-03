@@ -68,14 +68,17 @@ def export_pdf(data, filename, logo_path):
         bullet_style = ParagraphStyle(
             "bullet",
             parent=answer_style2,  # Warisi style utama
-            leftIndent=15  # Indentasi 15 pt ke kanan
+            leftIndent=25,  # Geser isi bullet lebih ke kanan
+            bulletIndent=15,  # Pastikan teks setelah bullet sejajar dengan benar
+            spaceBefore=3,  # Spasi sebelum bullet
+            spaceAfter=3  # Spasi setelah bullet
         )
         
         if isinstance(value, str):
             lines = value.split("\n")
-            elements_temp = []  # Menyimpan elemen dalam urutan parsing
-            last_number = 0  # Menyimpan nomor terakhir dari numbered list
-            in_numbered_list = False  # Menandai apakah kita sedang di dalam numbered list
+            elements_temp = []
+            last_number = 0
+            in_numbered_list = False
         
             for line in lines:
                 line = line.strip()
@@ -93,7 +96,6 @@ def export_pdf(data, filename, logo_path):
                         in_numbered_list = True
         
                     last_number += 1  # Tambah angka secara manual
-        
                     elements_temp.append(Paragraph(f"{last_number}. {text}", answer_style2))
                     elements_temp.append(Spacer(1, 6))
                     continue
@@ -104,7 +106,7 @@ def export_pdf(data, filename, logo_path):
                     in_numbered_list = False  # Keluar dari numbered list
         
                     # Tambahkan indentasi dengan style khusus
-                    elements_temp.append(Paragraph(f"• {text}", bullet_style))
+                    elements_temp.append(Paragraph(text, bullet_style, bulletText="•"))
                     elements_temp.append(Spacer(1, 6))
                     continue
         
@@ -114,7 +116,6 @@ def export_pdf(data, filename, logo_path):
                 elements_temp.append(Paragraph(line, answer_style))
                 elements_temp.append(Spacer(1, 6))
         
-            # Tambahkan elemen-elemen ke dalam elements utama
             elements.extend(elements_temp)
         
         else:
