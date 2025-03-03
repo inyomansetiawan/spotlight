@@ -50,7 +50,7 @@ def export_pdf(data, filename):
     elements.append(Spacer(1, 16))
 
     for idx, (key, value) in enumerate(data.items()):
-        question = Paragraph(f"<b>{key}</b>", ParagraphStyle("Question", parent=styles["Heading2"], fontName="Lato-Bold"))
+        question = Paragraph(f"<b>{key}</b>", ParagraphStyle("Question", parent=styles["Heading2"], fontName="Lato-Bold", alignment=TA_CENTER))
         elements.append(question)
         elements.append(Spacer(1, 6))
 
@@ -79,9 +79,9 @@ def export_pdf(data, filename):
 
             # Tambahkan elemen berdasarkan jenisnya
             if is_numbered and numbered_items:
-                elements.append(ListFlowable(numbered_items, bulletType="1", leftIndent=15, bulletFormat='%s.', bulletFontSize=10, bulletFontName="Lato-Regular"))
+                elements.append(ListFlowable(numbered_items, bulletType="1", leftIndent=15, bulletFormat='%s.', bulletFontSize=12, bulletFontName="Lato-Regular"))
             elif bullet_items:
-                elements.append(ListFlowable(bullet_items, bulletType="bullet", leftIndent=15, bulletFontName="Lato-Regular"))
+                elements.append(ListFlowable(bullet_items, bulletType="bullet", leftIndent=15, bulletFontName="Lato-Regular", bulletFontSize=12))
 
             # Tambahkan teks yang harus rata tengah secara terpisah
             for centered_text in centered_texts:
