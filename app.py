@@ -78,7 +78,7 @@ def export_pdf(data, filename, logo_path):
         # Style untuk bullet list
         bullet_style = ParagraphStyle(
             "bullet",
-            leftIndent=35,
+            leftIndent=25,
             bulletIndent=40,
             fontName="Lato-Regular", 
             fontSize=12,  
