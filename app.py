@@ -70,9 +70,9 @@ def export_pdf(data, filename):
                     bullet_items.append(ListItem(Paragraph(line, answer_style2)))
 
             if is_numbered and numbered_items:
-                answer = ListFlowable(numbered_items, bulletType="1", leftIndent=10, bulletFormat='%s.', bulletFontSize=10,)  # Gunakan numbering otomatis
+                answer = ListFlowable(numbered_items, bulletType="1", leftIndent=15, bulletFormat='%s.', bulletFontSize=10,)  # Gunakan numbering otomatis
             else:
-                answer = ListFlowable(bullet_items, bulletType="bullet", leftIndent=10)
+                answer = ListFlowable(bullet_items, bulletType="bullet", leftIndent=15)
 
         else:
             answer_style = answer_style1 if idx <= 4 else answer_style2
