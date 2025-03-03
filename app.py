@@ -42,11 +42,11 @@ def export_pdf(data, filename, logo_path):
     styles = getSampleStyleSheet()
 
     # Gaya teks
-    title_style = ParagraphStyle("Title", parent=styles["Title"], fontName="Helvetica-Bold", fontSize=26, textColor=DARK_BLUE, alignment=TA_CENTER)
-    subtitle_style = ParagraphStyle("Subtitle", parent=styles["Heading2"], fontName="Helvetica-Bold", fontSize=18, textColor=TURQUOISE, alignment=TA_CENTER)
+    title_style = ParagraphStyle("Title", parent=styles["Title"], fontName="Lato-Bold", fontSize=26, textColor=DARK_BLUE, alignment=TA_CENTER)
+    subtitle_style = ParagraphStyle("Subtitle", parent=styles["Heading2"], fontName="Lato-Bold", fontSize=18, textColor=TURQUOISE, alignment=TA_CENTER)
 
-    answer_style1 = ParagraphStyle("answer_style1", parent=styles["Normal"], fontName="Helvetica", fontSize=12, alignment=TA_CENTER, leading=18)
-    answer_style2 = ParagraphStyle("answer_style2", parent=styles["Normal"], fontName="Helvetica", fontSize=12, alignment=TA_JUSTIFY, leading=18)
+    answer_style1 = ParagraphStyle("answer_style1", parent=styles["Normal"], fontName="Lato-Regular", fontSize=12, alignment=TA_CENTER, leading=18)
+    answer_style2 = ParagraphStyle("answer_style2", parent=styles["Normal"], fontName="Lato-Regular", fontSize=12, alignment=TA_JUSTIFY, leading=18)
 
     # Header: Logo & Judul
     if logo_path:
@@ -60,7 +60,7 @@ def export_pdf(data, filename, logo_path):
     elements.append(Spacer(1, 36))
 
     for idx, (key, value) in enumerate(data.items()):
-        question = Paragraph(f"<b>{key}</b>", ParagraphStyle("Question", parent=styles["Heading2"], fontName="Helvetica-Bold", alignment=TA_CENTER, textColor=DARK_BLUE, leading=18))
+        question = Paragraph(f"<b>{key}</b>", ParagraphStyle("Question", parent=styles["Heading2"], fontName="Lato-Bold", alignment=TA_CENTER, textColor=DARK_BLUE, leading=18))
         elements.append(question)
         elements.append(Spacer(1, 12))
 
@@ -68,7 +68,7 @@ def export_pdf(data, filename, logo_path):
         numbering_style = ParagraphStyle(
             "numbering",
             parent=answer_style2,  # Warisi style utama
-            leftIndent=25
+            leftIndent=15
         )
         
         # Style untuk bullet list
