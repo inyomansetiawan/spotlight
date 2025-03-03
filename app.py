@@ -107,7 +107,7 @@ def export_pdf(data, filename, logo_path):
                     last_number += 1  # Tambah angka secara manual
                     
                     # Gunakan numbering style dengan bulletText untuk nomor
-                    elements_temp.append(Paragraph(text, numbering_style, bulletText=f"{last_number}.",fontName="Lato-Regular", fontSize=12))
+                    elements_temp.append(Paragraph(text, numbering_style, bulletText=f"{last_number}."))
                     elements_temp.append(Spacer(1, 6))
                     continue
         
@@ -117,7 +117,7 @@ def export_pdf(data, filename, logo_path):
                     in_numbered_list = False  
         
                     # Gunakan bullet style dengan bulletText untuk simbol bullet
-                    elements_temp.append(Paragraph(text, bullet_style, bulletText="•",fontName="Lato-Regular", fontSize=12))
+                    elements_temp.append(Paragraph(text, bullet_style, bulletText="•"))
                     elements_temp.append(Spacer(1, 6))
                     continue
         
