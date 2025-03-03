@@ -68,7 +68,9 @@ def export_pdf(data, filename, logo_path):
         numbering_style = ParagraphStyle(
             "numbering",
             parent=answer_style2,  # Warisi style utama
-            leftIndent=15
+            leftIndent=15,
+            fontName="Lato-Regular", 
+            fontSize=12
         )
         
         # Style untuk bullet list
@@ -76,7 +78,9 @@ def export_pdf(data, filename, logo_path):
             "bullet",
             parent=answer_style2,
             leftIndent=25,  
-            bulletIndent=15
+            bulletIndent=15,
+            fontName="Lato-Regular", 
+            fontSize=12
         )
         
         if isinstance(value, str):
@@ -231,9 +235,7 @@ with st.form("data_form"):
                                         "Taulina Anggarani S.Si, MA", 
                                         "Dr. Muchammad Romzi"])
     jumlah_anggota = st.number_input("Jumlah Anggota", min_value=1)
-    bulan = st.selectbox("Periode Pelaporan (Bulan)", ["", 
-                                                       "Januari 2025", 
-                                                       "Februari 2025", 
+    bulan = st.selectbox("Periode Pelaporan (Bulan)", ["",
                                                        "Januari-Februari 2025", 
                                                        "Maret 2025", 
                                                        "April 2025", 
