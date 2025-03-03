@@ -79,7 +79,7 @@ def export_pdf(data, filename):
 
             # Tambahkan elemen berdasarkan jenisnya
             if is_numbered and numbered_items:
-                list_items = [ListItem(Paragraph(item.getText(), answer_style2), spaceAfter=6) for item in numbered_items]
+                list_items = [ListItem(Paragraph(item, answer_style2), spaceAfter=6) for item in numbered_items]
                 elements.append(ListFlowable(
                     list_items,
                     bulletType="1",
@@ -92,7 +92,7 @@ def export_pdf(data, filename):
                 elements.append(Spacer(1, 6))  # Tambahkan spasi setelah daftar
             
             elif bullet_items:
-                list_items = [ListItem(Paragraph(item.getText(), answer_style2), spaceAfter=6) for item in bullet_items]
+                list_items = [ListItem(Paragraph(item, answer_style2), spaceAfter=6) for item in bullet_items]
                 elements.append(ListFlowable(
                     list_items,
                     bulletType="bullet",
