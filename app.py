@@ -43,9 +43,8 @@ def export_pdf(data, filename, logo_path):
     styles = getSampleStyleSheet()
 
     # Gaya teks
-    title_style1 = ParagraphStyle("Title", parent=styles["Title"], fontName="Lato-Bold", fontSize=26, textColor=GOLD, alignment=TA_CENTER)
-    title_style2 = ParagraphStyle("Title", parent=styles["Title"], fontName="Lato-Bold", fontSize=26, textColor=TURQUOISE, alignment=TA_CENTER)
-    subtitle_style = ParagraphStyle("Subtitle", parent=styles["Heading2"], fontName="Lato-Bold", fontSize=18, textColor=DARK_BLUE, alignment=TA_CENTER)
+    title_style = ParagraphStyle("Title", parent=styles["Title"], fontName="Lato-Bold", fontSize=26, textColor=DARK_BLUE, alignment=TA_CENTER)
+    subtitle_style = ParagraphStyle("Subtitle", parent=styles["Heading2"], fontName="Lato-Bold", fontSize=18, textColor=TURQUOISE, alignment=TA_CENTER)
 
     # Gaya untuk konten utama
     answer_style = ParagraphStyle("answer_style", parent=styles["Normal"], fontName="Lato-Regular", fontSize=12, alignment=TA_JUSTIFY, leading=18)
@@ -55,17 +54,8 @@ def export_pdf(data, filename, logo_path):
         logo = Image(logo_path, width=102.3, height=43.1)  # Sesuaikan ukuran logo
         elements.append(logo)  # Tambahkan logo terlebih dahulu
         elements.append(Spacer(1, 16))  # Beri jarak sebelum judul
-    
-    title_table = Table([
-    [Paragraph("SPOT", title_style1), Paragraph("Light", title_style2)]
-    ], colWidths=[100, 100])  # Sesuaikan lebar kolom jika perlu
-    
-    title_table.setStyle(TableStyle([
-        ('ALIGN', (0, 0), (-1, -1), 'CENTER'),  # Pusatkan teks di dalam tabel
-        ('VALIGN', (0, 0), (-1, -1), 'MIDDLE'),  # Pusatkan secara vertikal
-    ]))
-    
-    elements.append(title_table)  # Tambahkan tabel ke dokumen
+      
+    elements.append(Paragraph("SPOT Light", title_style))
     elements.append(Spacer(1, 10))  # Beri jarak sebelum elemen berikutnya
     elements.append(Paragraph("Summary of Progress & Objectives Tracker", subtitle_style))
     elements.append(Spacer(1, 24))
