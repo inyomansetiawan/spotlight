@@ -71,24 +71,31 @@ def export_pdf(data, filename, logo_path):
             bullet_items = []
             numbered_items = []
             centered_texts = []
-            is_numbered = True  # Default sebagai numbered list
-
-            for line in lines:
+            is_numbered = None  # Tidak diasumsikan sebagai numbered list dari awal
+            
+            for idx, line in enumerate(lines):
                 line = line.strip()
                 if not line:
-                    continue
-
-                match = re.match(r"^(\d+)\.\s(.+)", line)  # Cek angka + titik + spasi
+                    continue  # Lewati baris kosong
+            
+                match = re.match(r"^(\d+)\.\s(.+)", line)  # Cek apakah numbered list
                 if match:
                     _, text = match.groups()
+                    if is_numbered is False:  # Jika sebelumnya bullet, reset numbered_items
+                        numbered_items = []
+                    is_numbered = True
                     numbered_items.append(ListItem(Paragraph(text, answer_style2)))
-                elif line.startswith("- "):  # Bulleted list
+                
+                elif line.startswith("- "):  # Bullet list
+                    if is_numbered is True:  # Jika sebelumnya numbered list, reset bullet_items
+                        bullet_items = []
                     is_numbered = False
                     bullet_items.append(ListItem(Paragraph(line[2:], answer_style2)))
-                else:
-                    is_numbered = False
+            
+                else:  # Teks biasa (tidak masuk dalam bullet atau numbered list)
+                    is_numbered = None
                     answer_style1 = answer_style1 if idx <= 4 else answer_style2
-                    centered_texts.append(Paragraph(line, answer_style1))  # Teks biasa (tanpa bullet & numbering)
+                    centered_texts.append(Paragraph(line, answer_style1))
 
             # Tambahkan elemen berdasarkan jenisnya
             if is_numbered and numbered_items:
