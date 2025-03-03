@@ -29,7 +29,7 @@ pdfmetrics.registerFont(TTFont("Lato-Bold", "Lato-Bold.ttf"))
 
 def export_pdf(data, filename):
     buffer = io.BytesIO()
-    doc = SimpleDocTemplate(buffer, pagesize=A4, rightMargin=50, leftMargin=50, topMargin=50, bottomMargin=50)
+    doc = SimpleDocTemplate(buffer, pagesize=A4, rightMargin=60, leftMargin=60, topMargin=60, bottomMargin=60)
     elements = []
 
     styles = getSampleStyleSheet()
