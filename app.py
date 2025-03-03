@@ -41,7 +41,9 @@ def parse_list(text, answer_style):
     lines = text.split("\n")
     items = []
     current_numbered_list = []
-    current_bullet_list = None
+    current_bullet_list = []
+
+    last_numbered_item = None  # Menyimpan item numbered list terakhir untuk nesting bullet list
 
     for line in lines:
         line = line.strip()
@@ -50,29 +52,35 @@ def parse_list(text, answer_style):
 
         match = re.match(r"^(\d+)\.\s+(.+)", line)  # Cek apakah ini numbered list (1., 2., dst.)
         if match:
-            # Jika ada bullet list yang belum dimasukkan, tambahkan dulu
-            if current_bullet_list:
-                current_numbered_list[-1].flows.append(current_bullet_list)
-                current_bullet_list = None
+            # Jika ada bullet list sebelumnya, tambahkan ke item terakhir
+            if last_numbered_item and current_bullet_list:
+                nested_bullet_list = ListFlowable(current_bullet_list, bulletType="bullet", bulletFontSize=10)
+                last_numbered_item = ListItem(Paragraph(last_numbered_item, answer_style), nested_bullet_list)
+                current_numbered_list[-1] = last_numbered_item  # Update item sebelumnya
 
             _, text = match.groups()
-            list_item = ListItem(Paragraph(text, answer_style))
-            current_numbered_list.append(list_item)
+            last_numbered_item = text
+            current_numbered_list.append(ListItem(Paragraph(text, answer_style)))
+            current_bullet_list = []  # Reset bullet list untuk nomor berikutnya
             continue
 
         if line.startswith("- "):  # Jika bullet list (- ...)
-            if current_bullet_list is None:
-                current_bullet_list = ListFlowable([], bulletType="bullet", bulletFontSize=10)
-            
-            current_bullet_list.flowables.append(ListItem(Paragraph(line[2:], answer_style)))
+            if last_numbered_item:
+                # Masukkan bullet sebagai sublist dari numbered item terakhir
+                current_bullet_list.append(ListItem(Paragraph(line[2:], answer_style)))
+            else:
+                # Jika tidak ada numbered list sebelumnya, bullet list berdiri sendiri
+                items.append(ListItem(Paragraph(line[2:], answer_style)))
             continue
 
         # Jika bukan numbered/bullet list, anggap sebagai teks biasa
         items.append(Paragraph(line, answer_style))
 
     # Jika ada sisa bullet list setelah looping, tambahkan ke numbered item terakhir
-    if current_bullet_list and current_numbered_list:
-        current_numbered_list[-1].flows.append(current_bullet_list)
+    if last_numbered_item and current_bullet_list:
+        nested_bullet_list = ListFlowable(current_bullet_list, bulletType="bullet", bulletFontSize=10)
+        last_numbered_item = ListItem(Paragraph(last_numbered_item, answer_style), nested_bullet_list)
+        current_numbered_list[-1] = last_numbered_item  # Update item terakhir
 
     if current_numbered_list:
         items.append(ListFlowable(current_numbered_list, bulletType="1", bulletFormat="%s.", bulletFontSize=10))
