@@ -34,6 +34,59 @@ DARK_BLUE = colors.HexColor("#041c54")
 GOLD = colors.HexColor("#eeb308")
 LIGHT_GRAY = colors.HexColor("#DDDDDD")
 
+def parse_list(text, answer_style):
+    """
+    Mengubah teks yang berisi numbered list dan bullet list menjadi struktur ListFlowable bersarang.
+    """
+    lines = text.split("\n")
+    items = []
+    current_numbered_list = []
+    current_bullet_list = []
+    
+    last_numbered_item = None  # Menyimpan item numbered list terakhir untuk nesting bullet list
+
+    for line in lines:
+        line = line.strip()
+        if not line:
+            continue
+
+        match = re.match(r"^(\d+)\.\s+(.+)", line)  # Cek apakah ini numbered list (1., 2., dst.)
+        if match:
+            if last_numbered_item and current_bullet_list:
+                # Tambahkan bullet list ke item numbered sebelumnya sebagai sublist
+                last_numbered_item.flows.append(
+                    ListFlowable(current_bullet_list, bulletType="bullet", bulletFontSize=10)
+                )
+                current_bullet_list = []  # Reset bullet list setelah ditambahkan
+            
+            _, text = match.groups()
+            last_numbered_item = ListItem(Paragraph(text, answer_style))
+            current_numbered_list.append(last_numbered_item)
+            continue
+
+        if line.startswith("- "):  # Jika bullet list (- ...)
+            if last_numbered_item:
+                # Masukkan bullet sebagai sublist dari numbered item terakhir
+                current_bullet_list.append(ListItem(Paragraph(line[2:], answer_style)))
+            else:
+                # Jika tidak ada numbered list sebelumnya, bullet list berdiri sendiri
+                items.append(ListItem(Paragraph(line[2:], answer_style)))
+            continue
+
+        # Jika bukan numbered/bullet list, anggap sebagai teks biasa
+        items.append(Paragraph(line, answer_style))
+
+    # Jika ada sisa bullet list setelah looping, tambahkan ke numbered item terakhir
+    if last_numbered_item and current_bullet_list:
+        last_numbered_item.flows.append(
+            ListFlowable(current_bullet_list, bulletType="bullet", bulletFontSize=10)
+        )
+
+    if current_numbered_list:
+        items.append(ListFlowable(current_numbered_list, bulletType="1", bulletFormat="%s.", bulletFontSize=10))
+    
+    return items
+
 # Fungsi untuk ekspor PDF
 def export_pdf(data, filename, logo_path):
     buffer = io.BytesIO()
@@ -67,56 +120,9 @@ def export_pdf(data, filename, logo_path):
         elements.append(Spacer(1, 6))
 
         if isinstance(value, str):
-            lines = value.split("\n")
-            numbered_items = []
-            bullet_items = []
-            normal_texts = []
-            last_list_type = None  # Menyimpan jenis list terakhir yang digunakan
-            
-            for line in lines:
-                line = line.strip()
-                if not line:
-                    continue
-
-                # Cek apakah ini numbered list (1., 2., dst.)
-                match = re.match(r"^(\d+)\.\s+(.+)", line)
-                if match:
-                    _, text = match.groups()
-                    numbered_items.append(ListItem(Paragraph(text, answer_style2)))
-                    last_list_type = "numbered"
-                    continue
-
-                # Cek apakah ini bulleted list (- ...)
-                if line.startswith("- "):
-                    bullet_items.append(ListItem(Paragraph(line[2:], answer_style2)))
-                    last_list_type = "bullet"
-                    continue
-
-                # Jika bukan bullet atau numbered list, anggap sebagai teks biasa
-                normal_texts.append(Paragraph(line, answer_style1))
-                last_list_type = "text"
-
-            # Masukkan elemen-elemen dalam urutan yang benar
-            if numbered_items:
-                elements.append(ListFlowable(
-                    numbered_items,
-                    bulletType="1",
-                    bulletFormat="%s.",
-                    bulletFontSize=10
-                ))
-                elements.append(Spacer(1, 6))
-
-            if bullet_items:
-                elements.append(ListFlowable(
-                    bullet_items,
-                    bulletType="bullet",
-                    bulletFontSize=10
-                ))
-                elements.append(Spacer(1, 6))
-
-            for text in normal_texts:
-                elements.append(text)
-                elements.append(Spacer(1, 6))
+            list_elements = parse_list(value, answer_style2)
+            elements.extend(list_elements)
+            elements.append(Spacer(1, 6))
 
         else:
             answer_style = answer_style1 if idx <= 4 else answer_style2
