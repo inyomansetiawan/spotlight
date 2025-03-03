@@ -71,7 +71,7 @@ def export_pdf(data, filename, logo_path):
             fontName="Lato-Regular", 
             fontSize=12,  
             leading=18,
-            alignment=TA_JUSTIFY
+            alignment=TA_JUSTIFY,
             bulletIndent=15 
         )
         
