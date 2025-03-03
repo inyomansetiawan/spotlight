@@ -31,7 +31,7 @@ pdfmetrics.registerFont(TTFont("Lato-Bold", "Lato-Bold.ttf"))
 # Warna sesuai request
 TURQUOISE = colors.HexColor("#0ba8ed")
 DARK_BLUE = colors.HexColor("#041c54")
-GOLD = colors.HexColor("#FFD700")
+GOLD = colors.HexColor("#eeb308")
 LIGHT_GRAY = colors.HexColor("#DDDDDD")
 
 # Fungsi untuk ekspor PDF
@@ -44,7 +44,7 @@ def export_pdf(data, filename, logo_path):
 
     # Gaya teks
     title_style = ParagraphStyle("Title", parent=styles["Title"], fontName="Lato-Bold", fontSize=26, textColor=DARK_BLUE, alignment=TA_CENTER)
-    subtitle_style = ParagraphStyle("Subtitle", parent=styles["Heading2"], fontName="Lato-Bold", fontSize=18, textColor=TURQUOISE, alignment=TA_CENTER)
+    subtitle_style = ParagraphStyle("Subtitle", parent=styles["Heading2"], fontName="Lato-Bold", fontSize=18, textColor=GOLD, alignment=TA_CENTER)
 
     # Gaya untuk konten utama
     answer_style = ParagraphStyle("answer_style", parent=styles["Normal"], fontName="Lato-Regular", fontSize=12, alignment=TA_JUSTIFY, leading=18)
