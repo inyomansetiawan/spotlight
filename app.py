@@ -36,7 +36,7 @@ LIGHT_GRAY = colors.HexColor("#DDDDDD")
 
 def export_pdf(data, filename, logo_path):
     buffer = io.BytesIO()
-    doc = SimpleDocTemplate(buffer, pagesize=A4, rightMargin=60, leftMargin=60, topMargin=60, bottomMargin=60)
+    doc = SimpleDocTemplate(buffer, pagesize=A4, rightMargin=60, leftMargin=60, topMargin=80, bottomMargin=80)
     elements = []
 
     styles = getSampleStyleSheet()
