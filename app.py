@@ -67,7 +67,7 @@ def export_pdf(data, filename, logo_path):
         # Style untuk numbered list
         numbering_style = ParagraphStyle(
             "numbering",
-            leftIndent=25,
+            leftIndent=30,
             fontName="Lato-Regular", 
             fontSize=12,  
             leading=18,
@@ -79,7 +79,6 @@ def export_pdf(data, filename, logo_path):
         bullet_style = ParagraphStyle(
             "bullet",
             leftIndent=40,
-            bulletIndent=35,
             fontName="Lato-Regular", 
             fontSize=12,  
             leading=18,
