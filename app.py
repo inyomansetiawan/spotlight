@@ -12,6 +12,8 @@ from google.oauth2 import service_account
 from googleapiclient.discovery import build
 from googleapiclient.http import MediaIoBaseUpload
 from reportlab.platypus import ListFlowable, ListItem
+from reportlab.pdfbase.ttfonts import TTFont
+from reportlab.pdfbase import pdfmetrics
 
 # Konfigurasi Google Drive (GANTI DENGAN ID FOLDER ANDA)
 FOLDER_ID = "1Zvee0AaW9w2p0PLyqQ03bmCdmdt5dX-s"
