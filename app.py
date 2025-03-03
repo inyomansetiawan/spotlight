@@ -67,18 +67,21 @@ def export_pdf(data, filename, logo_path):
         # Style untuk numbered list
         numbering_style = ParagraphStyle(
             "numbering",
-            leftIndent=15,
-            fontName="Lato-Regular", 
-            fontSize=12
+            fontName="Lato-Regular",  # Pakai font Lato
+            fontSize=12,  # Ukuran font 12 pt
+            leftIndent=25,  # Indentasi biar teks rapi
+            bulletIndent=15,
+            leading=18
         )
         
         # Style untuk bullet list
         bullet_style = ParagraphStyle(
             "bullet",
+            fontName="Lato-Regular",  
+            fontSize=12,  
             leftIndent=25,  
-            bulletIndent=15,
-            fontName="Lato-Regular", 
-            fontSize=12
+            bulletIndent=15,  
+            leading=18
         )
         
         if isinstance(value, str):
@@ -86,45 +89,45 @@ def export_pdf(data, filename, logo_path):
             elements_temp = []
             last_number = 0
             in_numbered_list = False
-        
+            
             for line in lines:
                 line = line.strip()
                 if not line:
                     continue
-        
+            
                 # Cek apakah ini numbered list (1., 2., dst.)
                 match = re.match(r"^(\d+)\.\s+(.+)", line)
                 if match:
                     number, text = match.groups()
                     number = int(number)
-        
+            
                     if not in_numbered_list:
                         last_number = number - 1  # Mulai dari nomor yang benar
                         in_numbered_list = True
-        
+            
                     last_number += 1  # Tambah angka secara manual
                     
-                    # Gunakan numbering style dengan bulletText untuk nomor
-                    elements_temp.append(Paragraph(text, numbering_style, bulletText=f"{last_number}."))
+                    # Gunakan ListItem agar numbering rapi
+                    elements_temp.append(ListItem(Paragraph(text, numbering_style), leftIndent=15, value=last_number))
                     elements_temp.append(Spacer(1, 6))
                     continue
-        
+            
                 # Cek apakah ini bulleted list (- atau • ...)
                 if re.match(r"^[-•]\s+(.+)", line):
                     text = line[2:]
                     in_numbered_list = False  
-        
-                    # Gunakan bullet style dengan bulletText untuk simbol bullet
-                    elements_temp.append(Paragraph(text, bullet_style, bulletText="•"))
+            
+                    # Gunakan ListItem untuk bullet agar sejajar
+                    elements_temp.append(ListItem(Paragraph(text, bullet_style), leftIndent=15, bulletText="•"))
                     elements_temp.append(Spacer(1, 6))
                     continue
-        
+            
                 # Jika bukan bullet atau numbered list, anggap sebagai teks biasa
                 in_numbered_list = False
                 answer_style = answer_style1 if idx <= 5 else answer_style2
                 elements_temp.append(Paragraph(line, answer_style))
                 elements_temp.append(Spacer(1, 6))
-        
+            
             elements.extend(elements_temp)
         
         else:
