@@ -27,6 +27,14 @@ from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer, ListFlowabl
 from reportlab.lib.enums import TA_CENTER, TA_JUSTIFY
 
 
+import io
+import re
+from reportlab.lib.pagesizes import A4
+from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
+from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer, ListFlowable, ListItem
+from reportlab.lib.enums import TA_CENTER, TA_JUSTIFY
+
+
 def export_pdf(data, filename):
     buffer = io.BytesIO()
     doc = SimpleDocTemplate(buffer, pagesize=A4, rightMargin=30, leftMargin=30, topMargin=50, bottomMargin=30)
@@ -57,22 +65,23 @@ def export_pdf(data, filename):
             lines = value.split("\n")
             bullet_items = []
             numbered_items = []
-            is_numbered = False
+            is_numbered = True  # Default as numbered list, change if no numbered items detected
 
             for line in lines:
                 line = line.strip()
                 if not line:
                     continue
 
-                if line.startswith("- "):  # Bulleted list
-                    bullet_items.append(ListItem(Paragraph(line[2:], answer_style2)))
-                elif line[:2].isdigit() and line[2] == ".":  # Numbered list
-                    is_numbered = True
+                if re.match(r"^\d+\.\s", line):  # Numbered list (1. text, 2. text, etc.)
                     numbered_items.append(ListItem(Paragraph(line[3:], answer_style2)))
+                elif line.startswith("- "):  # Bulleted list
+                    is_numbered = False  # If there's a bullet, we assume this is not numbered
+                    bullet_items.append(ListItem(Paragraph(line[2:], answer_style2)))
                 else:
+                    is_numbered = False
                     bullet_items.append(ListItem(Paragraph(line, answer_style2)))
 
-            if is_numbered:
+            if is_numbered and numbered_items:
                 answer = ListFlowable(numbered_items, bulletType="1", leftIndent=20)
             else:
                 answer = ListFlowable(bullet_items, bulletType="bullet", leftIndent=20)
@@ -87,6 +96,7 @@ def export_pdf(data, filename):
     doc.build(elements)
     buffer.seek(0)
     return buffer
+
 
 def upload_to_drive(file_buffer, filename):
     file_metadata = {
