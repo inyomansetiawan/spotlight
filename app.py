@@ -129,7 +129,7 @@ def export_pdf(data, filename, logo_path):
     elements.append(Spacer(1, 30))
     elements.append(Table([[""]], colWidths=[500], rowHeights=[1], style=[("BACKGROUND", (0, 0), (-1, -1), LIGHT_GRAY)]))
     elements.append(Spacer(1, 6))
-    footer_text = Paragraph("Laporan Tim Direktorat Analisis dan Pengembangan Statistik", ParagraphStyle("Footer", parent=styles["Normal"], fontSize=10, textColor=colors.grey, alignment=TA_CENTER))
+    footer_text = Paragraph("Laporan Tim Direktorat Analisis dan Pengembangan Statistik", ParagraphStyle("Footer", parent=styles["Normal"], fontSize=12, textColor=colors.grey, alignment=TA_CENTER))
     elements.append(footer_text)
 
     doc.build(elements)
