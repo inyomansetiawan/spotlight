@@ -67,23 +67,23 @@ def export_pdf(data, filename, logo_path):
         # Style untuk numbered list
         numbering_style = ParagraphStyle(
             "numbering",
-            leftIndent=25,
+            leftIndent=15,
             fontName="Lato-Regular", 
             fontSize=12,  
             leading=18,
             alignment=TA_JUSTIFY,
-            firstLineIndent=-10
+            firstLineIndent=-15
         )
         
         # Style untuk bullet list
         bullet_style = ParagraphStyle(
             "bullet",
-            leftIndent=25,  
-            bulletIndent=15,
+            leftIndent=15,
             fontName="Lato-Regular", 
             fontSize=12,  
             leading=18,
-            alignment=TA_JUSTIFY
+            alignment=TA_JUSTIFY,
+            firstLineIndent=-15
         )
         
         if isinstance(value, str):
@@ -123,9 +123,16 @@ def export_pdf(data, filename, logo_path):
                 if re.match(r"^[-•]\s+(.+)", line):
                     text = line[2:]
                     in_numbered_list = False  
-        
-                    # Gunakan bullet style dengan bulletText untuk simbol bullet
-                    elements_temp.append(Paragraph(text, bullet_style, bulletText="•"))
+
+                    # Buat bullet dengan format HTML agar ukurannya bisa diatur
+                    bullet_text = "<font name='Lato-Regular' size='12'>•</font>"
+                    
+                    # Gabungkan bullet dengan teks utama
+                    formatted_bullet = f"{bullet_text} {text}"
+                    
+                    # Tambahkan ke elemen PDF
+                    elements_temp.append(Paragraph(formatted_bullet, bullet_style))
+
                     elements_temp.append(Spacer(1, 6))
                     continue
         
