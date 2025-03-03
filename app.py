@@ -70,7 +70,8 @@ def export_pdf(data, filename, logo_path):
             leftIndent=15,
             fontName="Lato-Regular", 
             fontSize=12,  
-            leading=18
+            leading=18,
+            alignment=TA_JUSTIFY
         )
         
         # Style untuk bullet list
@@ -80,7 +81,8 @@ def export_pdf(data, filename, logo_path):
             bulletIndent=15,
             fontName="Lato-Regular", 
             fontSize=12,  
-            leading=18
+            leading=18,
+            alignment=TA_JUSTIFY
         )
         
         if isinstance(value, str):
