@@ -68,7 +68,7 @@ def export_pdf(data, filename, logo_path):
         numbering_style = ParagraphStyle(
             "numbering",
             parent=answer_style2,  # Warisi style utama
-            bulletIndent=15  # Supaya teks setelah angka tetap sejajar
+            leftIndent=25
         )
         
         # Style untuk bullet list
