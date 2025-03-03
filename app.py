@@ -23,7 +23,7 @@ drive_service = build("drive", "v3", credentials=creds)
 
 def export_pdf(data, filename):
     buffer = io.BytesIO()
-    doc = SimpleDocTemplate(buffer, pagesize=A4, rightMargin=30, leftMargin=30, topMargin=50, bottomMargin=30)
+    doc = SimpleDocTemplate(buffer, pagesize=A4, rightMargin=50, leftMargin=50, topMargin=50, bottomMargin=50)
     elements = []
 
     styles = getSampleStyleSheet()
