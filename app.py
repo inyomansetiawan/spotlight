@@ -109,7 +109,8 @@ def export_pdf(data, filename, logo_path):
                     last_number += 1  # Tambah angka secara manual
                     
                     # Gunakan numbering style dengan bulletText untuk nomor
-                    elements_temp.append(Paragraph(text, numbering_style, bulletText=f"{last_number}."))
+                    formatted_text = Paragraph(text, numbering_style)
+                    elements_temp.append(ListItem(formatted_text, bulletText=f"{last_number}."))
                     elements_temp.append(Spacer(1, 6))
                     continue
         
