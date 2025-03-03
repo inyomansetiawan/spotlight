@@ -67,9 +67,8 @@ def export_pdf(data, filename, logo_path):
         if isinstance(value, str):
             lines = value.split("\n")
             elements_temp = []  # Menyimpan elemen dalam urutan parsing
-            current_numbered = []
-            current_bulleted = []
             last_number = 0  # Menyimpan nomor terakhir dari numbered list
+            in_numbered_list = False  # Menandai apakah kita sedang di dalam numbered list
         
             for line in lines:
                 line = line.strip()
@@ -82,66 +81,32 @@ def export_pdf(data, filename, logo_path):
                     number, text = match.groups()
                     number = int(number)
         
-                    # Jika ada bullet list sebelumnya, tambahkan ke elements
-                    if current_bulleted:
-                        elements_temp.append(ListFlowable(
-                            current_bulleted, bulletType="bullet", bulletFontSize=12
-                        ))
-                        elements_temp.append(Spacer(1, 6))
-                        current_bulleted = []
+                    # Pastikan numbering berlanjut
+                    if not in_numbered_list:
+                        last_number = number - 1  # Set angka sebelumnya agar bisa lanjut
+                        in_numbered_list = True
         
-                    # Jika numbering bukan kelanjutan, reset numbering
-                    if number != last_number + 1:
-                        last_number = number  # Mulai ulang numbering
+                    last_number += 1  # Tambah angka secara manual
         
-                    current_numbered.append(ListItem(Paragraph(text, answer_style2)))
-                    last_number += 1  # Update last_number agar berlanjut
+                    # Simpan sebagai teks dengan numbering manual
+                    elements_temp.append(Paragraph(f"{last_number}. {text}", answer_style2))
+                    elements_temp.append(Spacer(1, 6))
                     continue
         
                 # Cek apakah ini bulleted list (- atau • ...)
                 if re.match(r"^[-•]\s+(.+)", line):
                     text = line[2:]
         
-                    # Jika ada numbered list sebelumnya, tambahkan dulu ke elements
-                    if current_numbered:
-                        elements_temp.append(ListFlowable(
-                            current_numbered, bulletType="1", bulletFormat="%s.", bulletFontSize=12
-                        ))
-                        elements_temp.append(Spacer(1, 6))
-                        current_numbered = []
+                    # Keluar dari numbered list jika masuk bullet list
+                    in_numbered_list = False  
         
-                    current_bulleted.append(ListItem(Paragraph(text, answer_style2)))
+                    elements_temp.append(Paragraph(f"• {text}", answer_style2))
+                    elements_temp.append(Spacer(1, 6))
                     continue
         
                 # Jika bukan bullet atau numbered list, anggap sebagai teks biasa
-                if current_numbered:
-                    elements_temp.append(ListFlowable(
-                        current_numbered, bulletType="1", bulletFormat="%s.", bulletFontSize=12
-                    ))
-                    elements_temp.append(Spacer(1, 6))
-                    current_numbered = []
-        
-                if current_bulleted:
-                    elements_temp.append(ListFlowable(
-                        current_bulleted, bulletType="bullet", bulletFontSize=12
-                    ))
-                    elements_temp.append(Spacer(1, 6))
-                    current_bulleted = []
-        
+                in_numbered_list = False
                 elements_temp.append(Paragraph(line, answer_style1))
-                elements_temp.append(Spacer(1, 6))
-        
-            # Masukkan sisa numbered atau bulleted list yang belum ditambahkan
-            if current_numbered:
-                elements_temp.append(ListFlowable(
-                    current_numbered, bulletType="1", bulletFormat="%s.", bulletFontSize=12
-                ))
-                elements_temp.append(Spacer(1, 6))
-        
-            if current_bulleted:
-                elements_temp.append(ListFlowable(
-                    current_bulleted, bulletType="bullet", bulletFontSize=12
-                ))
                 elements_temp.append(Spacer(1, 6))
         
             # Tambahkan elemen-elemen yang sudah tersusun dengan benar ke elements
@@ -153,6 +118,7 @@ def export_pdf(data, filename, logo_path):
             elements.append(answer)
         
         elements.append(Spacer(1, 12))
+
     # Footer
     elements.append(Spacer(1, 30))
     elements.append(Table([[""]], colWidths=[500], rowHeights=[1], style=[("BACKGROUND", (0, 0), (-1, -1), LIGHT_GRAY)]))
