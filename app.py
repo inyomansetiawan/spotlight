@@ -67,11 +67,12 @@ def export_pdf(data, filename, logo_path):
         # Style untuk numbered list
         numbering_style = ParagraphStyle(
             "numbering",
-            leftIndent=15,
+            leftIndent=25,
             fontName="Lato-Regular", 
             fontSize=12,  
             leading=18,
             alignment=TA_JUSTIFY
+            bulletIndent=15 
         )
         
         # Style untuk bullet list
@@ -108,9 +109,13 @@ def export_pdf(data, filename, logo_path):
         
                     last_number += 1  # Tambah angka secara manual
 
-                    all_text = Paragraph(text, numbering_style, bulletText=f"{last_number}.")
-                    all_text = "<font name='Lato-Regular' size='12'>{all_text}</font>"
-                    elements_temp.append(all_text)
+                    # Format nomor dengan HTML agar bisa diatur ukuran dan font-nya
+                    number_text = f"<font name='Lato-Regular' size='12'>{last_number}.</font>"
+                    
+                    # Gabungkan nomor dengan teks utama
+                    formatted_text = f"{number_text} {text}"
+
+                    elements_temp.append(Paragraph(formatted_text, numbering_style))
                     elements_temp.append(Spacer(1, 6))
                     continue
         
