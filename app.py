@@ -233,7 +233,7 @@ if st.button("Ekspor & Unggah ke Google Drive"):
         st.warning("Harap isi Nama Tim terlebih dahulu.")
     else:
         filename = f"{nama_tim}_{bulan}.pdf"
-        pdf_buffer = export_pdf(st.session_state.data, filename, logo.png)
+        pdf_buffer = export_pdf(st.session_state.data, filename, "logo.png")
         gdrive_link = upload_to_drive(pdf_buffer, filename)
         
         if gdrive_link:
