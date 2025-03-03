@@ -137,6 +137,15 @@ def export_pdf(data, filename, logo_path):
     return buffer
 
 def upload_to_drive(file_buffer, filename):
+    # 1. Cek apakah file dengan nama yang sama sudah ada di folder
+    query = f"name='{filename}' and '{FOLDER_ID}' in parents and trashed=false"
+    existing_files = drive_service.files().list(q=query, fields="files(id)").execute()
+
+    # 2. Jika file sudah ada, hapus terlebih dahulu
+    for file in existing_files.get("files", []):
+        drive_service.files().delete(fileId=file["id"]).execute()
+
+    # 3. Unggah file baru dengan nama yang sama
     file_metadata = {
         "name": filename,
         "parents": [FOLDER_ID]
