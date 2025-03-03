@@ -67,63 +67,51 @@ def export_pdf(data, filename, logo_path):
             bullet_items = []
             numbered_items = []
             normal_texts = []
-            mixed_list = []  # List untuk menampung kombinasi bullet & numbering
-            is_numbered = False
-            is_bulleted = False
+            is_numbered = True  # Default dianggap numbering
 
             for line in lines:
                 line = line.strip()
                 if not line:
                     continue
 
-                match_numbering = re.match(r"^(\d+)\.\s(.+)", line)  # Cek angka + titik + spasi
-                match_bullet = re.match(r"^- (.+)", line)  # Cek bullet (- )
-
-                if match_numbering:
-                    _, text = match_numbering.groups()
-                    mixed_list.append(("numbered", text))
-                    is_numbered = True
-                elif match_bullet:
-                    text = match_bullet.groups()[0]
-                    mixed_list.append(("bulleted", text))
-                    is_bulleted = True
+                match = re.match(r"^(\d+)\.\s(.+)", line)  # Cek angka + titik + spasi
+                if match:
+                    _, text = match.groups()
+                    numbered_items.append(ListItem(Paragraph(text, answer_style)))
+                elif line.startswith("- "):  # Bullet list
+                    is_numbered = False
+                    bullet_items.append(ListItem(Paragraph(line[2:], answer_style)))
                 else:
-                    mixed_list.append(("text", line))
+                    is_numbered = False
+                    normal_texts.append(Paragraph(line, answer_style))
 
-            # Jika ada kombinasi bullet & numbering, tetap tampilkan dengan format yang benar
-            if is_numbered and is_bulleted:
-                for item_type, text in mixed_list:
-                    if item_type == "numbered":
-                        elements.append(Paragraph(f"• {text}", answer_style))  # Gunakan bullet jika campuran
-                    elif item_type == "bulleted":
-                        elements.append(Paragraph(f"◦ {text}", answer_style))  # Gunakan sub-bullet untuk bullet asli
-                    else:
-                        elements.append(Paragraph(text, answer_style))
-                    elements.append(Spacer(1, 6))
-            
-            # Jika hanya numbering
-            elif is_numbered:
+            # Tambahkan elemen ke PDF sesuai jenisnya
+            if is_numbered and numbered_items:
                 elements.append(ListFlowable(
-                    [ListItem(Paragraph(text, answer_style)) for _, text in mixed_list if _ == "numbered"],
-                    bulletType="1",
-                    leftIndent=15
+                    numbered_items,
+                    bulletType="1",  
+                    leftIndent=15,
+                    bulletFormat='%s.',  
+                    bulletFontName="Lato-Regular",  
+                    bulletFontSize=12,  
+                    bulletIndent=5  
                 ))
-                elements.append(Spacer(1, 6))
-            
-            # Jika hanya bullet list
-            elif is_bulleted:
+                elements.append(Spacer(1, 6))  
+
+            elif bullet_items:
                 elements.append(ListFlowable(
-                    [ListItem(Paragraph(text, answer_style)) for _, text in mixed_list if _ == "bulleted"],
+                    bullet_items,
                     bulletType="bullet",
-                    leftIndent=15
+                    leftIndent=15,
+                    bulletFontName="Lato-Regular",  
+                    bulletFontSize=12,  
+                    bulletIndent=5  
                 ))
-                elements.append(Spacer(1, 6))
+                elements.append(Spacer(1, 6))  
 
-            # Jika hanya teks biasa
-            else:
-                for _, text in mixed_list:
-                    elements.append(Paragraph(text, answer_style))
-                    elements.append(Spacer(1, 6))
+            for normal_text in normal_texts:
+                elements.append(normal_text)
+                elements.append(Spacer(1, 6))
 
         else:
             elements.append(Paragraph(str(value), answer_style))
@@ -140,7 +128,6 @@ def export_pdf(data, filename, logo_path):
     doc.build(elements)
     buffer.seek(0)
     return buffer
-
 
 def upload_to_drive(file_buffer, filename):
     # 1. Cek apakah file dengan nama yang sama sudah ada di folder
