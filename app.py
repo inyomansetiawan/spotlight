@@ -64,14 +64,20 @@ def export_pdf(data, filename, logo_path):
         elements.append(question)
         elements.append(Spacer(1, 12))
 
-        # Tambahkan style dengan indentasi untuk bullet list
+        # Style untuk numbered list
+        numbering_style = ParagraphStyle(
+            "numbering",
+            parent=answer_style2,  # Warisi style utama
+            leftIndent=25,  # Indentasi untuk daftar bernomor
+            bulletIndent=15  # Supaya teks setelah angka tetap sejajar
+        )
+        
+        # Style untuk bullet list
         bullet_style = ParagraphStyle(
             "bullet",
-            parent=answer_style2,  # Warisi style utama
-            leftIndent=25,  # Geser isi bullet lebih ke kanan
-            bulletIndent=15,  # Pastikan teks setelah bullet sejajar dengan benar
-            spaceBefore=3,  # Spasi sebelum bullet
-            spaceAfter=1.5  # Spasi setelah bullet
+            parent=answer_style2,
+            leftIndent=25,  
+            bulletIndent=15
         )
         
         if isinstance(value, str):
@@ -96,16 +102,18 @@ def export_pdf(data, filename, logo_path):
                         in_numbered_list = True
         
                     last_number += 1  # Tambah angka secara manual
-                    elements_temp.append(Paragraph(f"{last_number}. {text}", answer_style2))
+                    
+                    # Gunakan numbering style dengan bulletText untuk nomor
+                    elements_temp.append(Paragraph(text, numbering_style, bulletText=f"{last_number}."))
                     elements_temp.append(Spacer(1, 6))
                     continue
         
                 # Cek apakah ini bulleted list (- atau • ...)
                 if re.match(r"^[-•]\s+(.+)", line):
                     text = line[2:]
-                    in_numbered_list = False  # Keluar dari numbered list
+                    in_numbered_list = False  
         
-                    # Tambahkan indentasi dengan style khusus
+                    # Gunakan bullet style dengan bulletText untuk simbol bullet
                     elements_temp.append(Paragraph(text, bullet_style, bulletText="•"))
                     elements_temp.append(Spacer(1, 6))
                     continue
