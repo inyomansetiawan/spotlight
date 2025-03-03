@@ -35,12 +35,12 @@ def export_pdf(data, filename):
     styles = getSampleStyleSheet()
 
     # Gaya teks dengan font Lato
-    title_style = ParagraphStyle("Title", parent=styles["Title"], fontName="Lato-Bold", alignment=TA_CENTER)
-    subtitle_style = ParagraphStyle("Subtitle", parent=styles["Heading2"], fontName="Lato-Bold", alignment=TA_CENTER)
+    title_style = ParagraphStyle("Title", parent=styles["Title"], fontName="Lato-Bold", alignment=TA_CENTER, leading=18)
+    subtitle_style = ParagraphStyle("Subtitle", parent=styles["Heading2"], fontName="Lato-Bold", alignment=TA_CENTER, leading=18)
 
-    # Style untuk jawaban (rata tengah dan justify)
-    answer_style1 = ParagraphStyle("answer_style1", parent=styles["Normal"], fontName="Lato-Regular", fontSize=12, alignment=TA_CENTER)
-    answer_style2 = ParagraphStyle("answer_style2", parent=styles["Normal"], fontName="Lato-Regular", fontSize=12, alignment=TA_JUSTIFY)
+    # Style untuk jawaban (rata tengah dan justify) dengan leading 1.5x font size
+    answer_style1 = ParagraphStyle("answer_style1", parent=styles["Normal"], fontName="Lato-Regular", fontSize=12, alignment=TA_CENTER, leading=18)
+    answer_style2 = ParagraphStyle("answer_style2", parent=styles["Normal"], fontName="Lato-Regular", fontSize=12, alignment=TA_JUSTIFY, leading=18)
 
     title = Paragraph("SPOT Light", title_style)
     subtitle = Paragraph("Summary of Progress & Objectives Tracker", subtitle_style)
@@ -50,7 +50,7 @@ def export_pdf(data, filename):
     elements.append(Spacer(1, 16))
 
     for idx, (key, value) in enumerate(data.items()):
-        question = Paragraph(f"<b>{key}</b>", ParagraphStyle("Question", parent=styles["Heading2"], fontName="Lato-Bold", alignment=TA_CENTER))
+        question = Paragraph(f"<b>{key}</b>", ParagraphStyle("Question", parent=styles["Heading2"], fontName="Lato-Bold", alignment=TA_CENTER, leading=18))
         elements.append(question)
         elements.append(Spacer(1, 6))
 
@@ -84,23 +84,22 @@ def export_pdf(data, filename):
                     bulletType="1",
                     leftIndent=15,
                     bulletFormat='%s.',  
-                    bulletFontName="Lato-Regular",  # Pastikan bullet menggunakan Lato
-                    bulletFontSize=12,  # Ukuran font numbering
-                    bulletIndent=5  # Memberikan sedikit jarak antara bullet dan teks
+                    bulletFontName="Lato-Regular",  
+                    bulletFontSize=12,  
+                    bulletIndent=5  
                 ))
-                elements.append(Spacer(1, 6))  # Tambahkan spasi setelah daftar
+                elements.append(Spacer(1, 6))  
             
             elif bullet_items:
                 elements.append(ListFlowable(
                     bullet_items,
                     bulletType="bullet",
                     leftIndent=15,
-                    bulletFontName="Lato-Regular",  # Pastikan bullet menggunakan Lato
-                    bulletFontSize=12,  # Ukuran font bullets
-                    bulletIndent=5  # Jarak antara bullet dan teks
+                    bulletFontName="Lato-Regular",  
+                    bulletFontSize=12,  
+                    bulletIndent=5  
                 ))
-                elements.append(Spacer(1, 6))  # Tambahkan spasi setelah daftar
-
+                elements.append(Spacer(1, 6))  
 
             # Tambahkan teks yang harus rata tengah secara terpisah
             for centered_text in centered_texts:
