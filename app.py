@@ -51,7 +51,8 @@ def export_pdf(data, filename):
             lines = value.split("\n")
             bullet_items = []
             numbered_items = []
-            is_numbered = True  # Default as numbered list, change if no numbered items detected
+            centered_texts = []
+            is_numbered = True  # Default sebagai numbered list
 
             for line in lines:
                 line = line.strip()
@@ -60,25 +61,31 @@ def export_pdf(data, filename):
 
                 match = re.match(r"^(\d+)\.\s(.+)", line)  # Cek angka + titik + spasi
                 if match:
-                    _, text = match.groups()  # Ambil hanya teks tanpa angka
-                    numbered_items.append(ListItem(Paragraph(text, answer_style2)))  # Gunakan numbering otomatis
+                    _, text = match.groups()
+                    numbered_items.append(ListItem(Paragraph(text, answer_style2)))
                 elif line.startswith("- "):  # Bulleted list
-                    is_numbered = False  # Jika ada bullet, maka bukan numbered list
+                    is_numbered = False
                     bullet_items.append(ListItem(Paragraph(line[2:], answer_style2)))
                 else:
                     is_numbered = False
-                    bullet_items.append(ListItem(Paragraph(line, answer_style2)))
+                    centered_texts.append(Paragraph(line, answer_style1))  # Teks biasa (tanpa bullet & numbering)
 
+            # Tambahkan elemen berdasarkan jenisnya
             if is_numbered and numbered_items:
-                answer = ListFlowable(numbered_items, bulletType="1", leftIndent=15, bulletFormat='%s.', bulletFontSize=10,)  # Gunakan numbering otomatis
-            else:
-                answer = ListFlowable(bullet_items, bulletType="bullet", leftIndent=15)
+                elements.append(ListFlowable(numbered_items, bulletType="1", leftIndent=15, bulletFormat='%s.', bulletFontSize=10))
+            elif bullet_items:
+                elements.append(ListFlowable(bullet_items, bulletType="bullet", leftIndent=15))
+
+            # Tambahkan teks yang harus rata tengah secara terpisah
+            for centered_text in centered_texts:
+                elements.append(centered_text)
+                elements.append(Spacer(1, 6))
 
         else:
             answer_style = answer_style1 if idx <= 4 else answer_style2
             answer = Paragraph(str(value), answer_style)
+            elements.append(answer)
 
-        elements.append(answer)
         elements.append(Spacer(1, 12))
 
     doc.build(elements)
