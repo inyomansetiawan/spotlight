@@ -51,9 +51,9 @@ def export_pdf(data, filename, logo_path):
 
     # Header: Logo & Judul
     if logo_path:
-        logo = Image(logo_path, width=58.4, height=24.6)  # Sesuaikan ukuran logo
+        logo = Image(logo_path, width=78.4, height=44.6)  # Sesuaikan ukuran logo
         elements.append(logo)  # Tambahkan logo terlebih dahulu
-        elements.append(Spacer(1, 10))  # Beri jarak sebelum judul
+        elements.append(Spacer(1, 16))  # Beri jarak sebelum judul
     
     elements.append(Paragraph("SPOT Light", title_style))
     elements.append(Paragraph("Summary of Progress & Objectives Tracker", subtitle_style))
