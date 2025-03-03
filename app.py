@@ -35,7 +35,7 @@ def export_pdf(data, filename):
     styles = getSampleStyleSheet()
 
     # Gaya teks dengan font Lato
-    title_style = ParagraphStyle("Title", parent=styles["Title"], fontName="Lato-Bold", alignment=TA_CENTER, fontSize=24, leading=18)
+    title_style = ParagraphStyle("Title", parent=styles["Title"], fontName="Lato-Bold", alignment=TA_CENTER, fontSize=26, leading=18)
     subtitle_style = ParagraphStyle("Subtitle", parent=styles["Heading2"], fontName="Lato-Bold", alignment=TA_CENTER, fontSize=18, leading=18)
 
     # Style untuk jawaban (rata tengah dan justify) dengan leading 1.5x font size
@@ -45,9 +45,9 @@ def export_pdf(data, filename):
     title = Paragraph("SPOT Light", title_style)
     subtitle = Paragraph("Summary of Progress & Objectives Tracker", subtitle_style)
     elements.append(title)
-    elements.append(Spacer(1, 2))
+    elements.append(Spacer(1, 4))
     elements.append(subtitle)
-    elements.append(Spacer(1, 20))
+    elements.append(Spacer(1, 24))
 
     for idx, (key, value) in enumerate(data.items()):
         question = Paragraph(f"<b>{key}</b>", ParagraphStyle("Question", parent=styles["Heading2"], fontName="Lato-Bold", alignment=TA_CENTER, leading=18))
