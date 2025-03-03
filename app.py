@@ -111,7 +111,7 @@ def export_pdf(data, filename, logo_path):
                     # Ubah nomor menjadi teks yang diformat
                     number_text = f"<font name='Lato-Regular' size='12'>{last_number}.</font>"
                     
-                    elements_temp.append(Paragraph(text, numbering_style, bulletText=f"{number_text}))
+                    elements_temp.append(Paragraph(text, numbering_style, bulletText=f"{number_text}"))
                     elements_temp.append(Spacer(1, 6))
                     continue
         
