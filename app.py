@@ -67,7 +67,7 @@ def export_pdf(data, filename, logo_path):
         # Style untuk numbered list
         numbering_style = ParagraphStyle(
             "numbering",
-            leftIndent=40,
+            leftIndent=25,
             fontName="Lato-Regular", 
             fontSize=12,  
             leading=18,
@@ -111,7 +111,7 @@ def export_pdf(data, filename, logo_path):
                     last_number += 1  # Tambah angka secara manual
 
                     # Format nomor dengan HTML agar bisa diatur ukuran dan font-nya
-                    number_text = f"<font name='Lato-Regular' size='12'>{last_number}.</font>"
+                    number_text = f"<font name='Lato-Regular' size='12'>{last_number}./t/t</font>"
                     
                     # Gabungkan nomor dengan teks utama
                     formatted_text = f"{number_text} {text}"
@@ -126,7 +126,7 @@ def export_pdf(data, filename, logo_path):
                     in_numbered_list = False  
 
                     # Buat bullet dengan format HTML agar ukurannya bisa diatur
-                    bullet_text = "<font name='Lato-Regular' size='12'>•</font>"
+                    bullet_text = "<font name='Lato-Regular' size='12'>•/t/t</font>"
                     
                     # Gabungkan bullet dengan teks utama
                     formatted_bullet = f"{bullet_text} {text}"
