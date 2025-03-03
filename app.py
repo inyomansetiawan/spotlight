@@ -72,7 +72,7 @@ def export_pdf(data, filename, logo_path):
             fontSize=12,  
             leading=18,
             alignment=TA_JUSTIFY,
-            firstLineIndent=-15
+            firstLineIndent=40
         )
         
         # Style untuk bullet list
