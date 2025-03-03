@@ -65,18 +65,19 @@ def export_pdf(data, filename, logo_path):
         question = Paragraph(f"<b>{key}</b>", ParagraphStyle("Question", parent=styles["Heading2"], fontName="Lato-Bold", alignment=TA_CENTER, textColor=DARK_BLUE, leading=18))
         elements.append(question)
         elements.append(Spacer(1, 6))
-    
+
         if isinstance(value, str):
             lines = value.split("\n")
             bullet_items = []
             numbered_items = []
             centered_texts = []
             is_numbered = True  # Default sebagai numbered list
+
             for line in lines:
                 line = line.strip()
                 if not line:
                     continue
-            
+
                 match = re.match(r"^(\d+)\.\s(.+)", line)  # Cek angka + titik + spasi
                 if match:
                     _, text = match.groups()
@@ -87,21 +88,9 @@ def export_pdf(data, filename, logo_path):
                 else:
                     is_numbered = False
                     centered_texts.append(Paragraph(line, answer_style1))  # Teks biasa (tanpa bullet & numbering)
-            
-            # Setelah parsing selesai, tambahkan bullet list di bawah heading yang sesuai
-            for heading, bullets in bullet_dict.items():
-                elements.append(ListFlowable(
-                    [ListItem(bullet) for bullet in bullets],
-                    bulletType="bullet",
-                    leftIndent=15,
-                    bulletFontName="Lato-Regular",
-                    bulletFontSize=12,
-                    bulletIndent=5
-                ))
-                elements.append(Spacer(1, 6))
 
             # Tambahkan elemen berdasarkan jenisnya
-            if numbered_items:
+            if is_numbered and numbered_items:
                 elements.append(ListFlowable(
                     numbered_items,
                     bulletType="1",
@@ -113,7 +102,7 @@ def export_pdf(data, filename, logo_path):
                 ))
                 elements.append(Spacer(1, 6))  
             
-            if bullet_items:
+            elif bullet_items:
                 elements.append(ListFlowable(
                     bullet_items,
                     bulletType="bullet",
@@ -123,17 +112,17 @@ def export_pdf(data, filename, logo_path):
                     bulletIndent=5  
                 ))
                 elements.append(Spacer(1, 6))  
-    
+
             # Tambahkan teks yang harus rata tengah secara terpisah
             for centered_text in centered_texts:
                 elements.append(centered_text)
                 elements.append(Spacer(1, 6))
-    
+
         else:
             answer_style = answer_style1 if idx <= 4 else answer_style2
             answer = Paragraph(str(value), answer_style)
             elements.append(answer)
-    
+
         elements.append(Spacer(1, 12))
 
     # Footer dengan garis pemisah opacity rendah
