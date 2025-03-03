@@ -64,6 +64,13 @@ def export_pdf(data, filename, logo_path):
         elements.append(question)
         elements.append(Spacer(1, 6))
 
+        # Tambahkan style dengan indentasi untuk bullet list
+        bullet_style = ParagraphStyle(
+            "bullet",
+            parent=answer_style2,  # Warisi style utama
+            leftIndent=20  # Indentasi 20 pt ke kanan
+        )
+        
         if isinstance(value, str):
             lines = value.split("\n")
             elements_temp = []  # Menyimpan elemen dalam urutan parsing
@@ -81,14 +88,12 @@ def export_pdf(data, filename, logo_path):
                     number, text = match.groups()
                     number = int(number)
         
-                    # Pastikan numbering berlanjut
                     if not in_numbered_list:
-                        last_number = number - 1  # Set angka sebelumnya agar bisa lanjut
+                        last_number = number - 1  # Mulai dari nomor yang benar
                         in_numbered_list = True
         
                     last_number += 1  # Tambah angka secara manual
         
-                    # Simpan sebagai teks dengan numbering manual
                     elements_temp.append(Paragraph(f"{last_number}. {text}", answer_style2))
                     elements_temp.append(Spacer(1, 6))
                     continue
@@ -96,11 +101,10 @@ def export_pdf(data, filename, logo_path):
                 # Cek apakah ini bulleted list (- atau • ...)
                 if re.match(r"^[-•]\s+(.+)", line):
                     text = line[2:]
+                    in_numbered_list = False  # Keluar dari numbered list
         
-                    # Keluar dari numbered list jika masuk bullet list
-                    in_numbered_list = False  
-        
-                    elements_temp.append(Paragraph(f"• {text}", answer_style2))
+                    # Tambahkan indentasi dengan style khusus
+                    elements_temp.append(Paragraph(f"• {text}", bullet_style))
                     elements_temp.append(Spacer(1, 6))
                     continue
         
@@ -109,7 +113,7 @@ def export_pdf(data, filename, logo_path):
                 elements_temp.append(Paragraph(line, answer_style1))
                 elements_temp.append(Spacer(1, 6))
         
-            # Tambahkan elemen-elemen yang sudah tersusun dengan benar ke elements
+            # Tambahkan elemen-elemen ke dalam elements utama
             elements.extend(elements_temp)
         
         else:
