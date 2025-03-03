@@ -87,7 +87,8 @@ def export_pdf(data, filename, logo_path):
                     bullet_items.append(ListItem(Paragraph(line[2:], answer_style2)))
                 else:
                     is_numbered = False
-                    centered_texts.append(Paragraph(line, answer_style2))  # Teks biasa (tanpa bullet & numbering)
+                    answer_style1 = answer_style1 if idx <= 4 else answer_style2
+                    centered_texts.append(Paragraph(line, answer_style1))  # Teks biasa (tanpa bullet & numbering)
 
             # Tambahkan elemen berdasarkan jenisnya
             if is_numbered and numbered_items:
