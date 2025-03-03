@@ -70,7 +70,7 @@ def export_pdf(data, filename, logo_path):
             parent=answer_style2,  # Warisi style utama
             leftIndent=15,
             fontName="Lato-Regular", 
-            fontSize=12
+            fontSize=14
         )
         
         # Style untuk bullet list
@@ -80,7 +80,7 @@ def export_pdf(data, filename, logo_path):
             leftIndent=25,  
             bulletIndent=15,
             fontName="Lato-Regular", 
-            fontSize=12
+            fontSize=14
         )
         
         if isinstance(value, str):
