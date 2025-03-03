@@ -2,7 +2,7 @@ import streamlit as st
 import pandas as pd
 import datetime
 from reportlab.lib.pagesizes import A4
-from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer
+from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer, Image, Table, TableStyle
 from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
 from reportlab.lib.enums import TA_CENTER, TA_JUSTIFY
 import io
@@ -14,6 +14,7 @@ from googleapiclient.http import MediaIoBaseUpload
 from reportlab.platypus import ListFlowable, ListItem
 from reportlab.pdfbase.ttfonts import TTFont
 from reportlab.pdfbase import pdfmetrics
+from reportlab.lib import colors
 
 # Konfigurasi Google Drive (GANTI DENGAN ID FOLDER ANDA)
 FOLDER_ID = "1Zvee0AaW9w2p0PLyqQ03bmCdmdt5dX-s"
@@ -27,91 +28,71 @@ drive_service = build("drive", "v3", credentials=creds)
 pdfmetrics.registerFont(TTFont("Lato-Regular", "Lato-Regular.ttf"))
 pdfmetrics.registerFont(TTFont("Lato-Bold", "Lato-Bold.ttf"))
 
-def export_pdf(data, filename):
+# Warna sesuai request
+TURQUOISE = colors.HexColor("#40E0D0")
+DARK_BLUE = colors.HexColor("#003366")
+GOLD = colors.HexColor("#FFD700")
+LIGHT_GRAY = colors.HexColor("#DDDDDD")
+
+# Fungsi untuk ekspor PDF
+def export_pdf(data, filename, logo_path):
     buffer = io.BytesIO()
     doc = SimpleDocTemplate(buffer, pagesize=A4, rightMargin=60, leftMargin=60, topMargin=60, bottomMargin=60)
     elements = []
 
     styles = getSampleStyleSheet()
 
-    # Gaya teks dengan font Lato
-    title_style = ParagraphStyle("Title", parent=styles["Title"], fontName="Lato-Bold", alignment=TA_CENTER, fontSize=26, leading=18)
-    subtitle_style = ParagraphStyle("Subtitle", parent=styles["Heading2"], fontName="Lato-Bold", alignment=TA_CENTER, fontSize=18, leading=18)
+    # Gaya teks
+    title_style = ParagraphStyle("Title", parent=styles["Title"], fontName="Lato-Bold", fontSize=24, textColor=DARK_BLUE, alignment=TA_CENTER)
+    subtitle_style = ParagraphStyle("Subtitle", parent=styles["Heading2"], fontName="Lato-Bold", fontSize=16, textColor=TURQUOISE, alignment=TA_CENTER)
 
-    # Style untuk jawaban (rata tengah dan justify) dengan leading 1.5x font size
-    answer_style1 = ParagraphStyle("answer_style1", parent=styles["Normal"], fontName="Lato-Regular", fontSize=12, alignment=TA_CENTER, leading=18)
-    answer_style2 = ParagraphStyle("answer_style2", parent=styles["Normal"], fontName="Lato-Regular", fontSize=12, alignment=TA_JUSTIFY, leading=18)
+    # Gaya untuk konten utama
+    answer_style = ParagraphStyle("answer_style", parent=styles["Normal"], fontName="Lato-Regular", fontSize=12, alignment=TA_JUSTIFY, leading=18)
 
-    title = Paragraph("SPOT Light", title_style)
-    subtitle = Paragraph("Summary of Progress & Objectives Tracker", subtitle_style)
-    elements.append(title)
-    elements.append(Spacer(1, 6))
-    elements.append(subtitle)
-    elements.append(Spacer(1, 36))
+    # Header: Logo & Judul
+    if logo_path:
+        logo = Image(logo_path, width=60, height=60)  # Sesuaikan ukuran logo
+        header_table = Table([[logo, Paragraph("<b>SPOT Light</b><br/>Summary of Progress & Objectives Tracker", title_style)]], colWidths=[80, 400])
+        elements.append(header_table)
+        elements.append(Spacer(1, 20))
+    else:
+        elements.append(Paragraph("SPOT Light", title_style))
+        elements.append(Paragraph("Summary of Progress & Objectives Tracker", subtitle_style))
+        elements.append(Spacer(1, 20))
 
-    for idx, (key, value) in enumerate(data.items()):
-        question = Paragraph(f"<b>{key}</b>", ParagraphStyle("Question", parent=styles["Heading2"], fontName="Lato-Bold", alignment=TA_CENTER, leading=18))
+    # Isi laporan
+    for key, value in data.items():
+        question = Paragraph(f"<b>{key}</b>", ParagraphStyle("Question", parent=styles["Heading2"], fontName="Lato-Bold", textColor=DARK_BLUE, leading=18))
         elements.append(question)
         elements.append(Spacer(1, 6))
 
         if isinstance(value, str):
             lines = value.split("\n")
             bullet_items = []
-            numbered_items = []
-            centered_texts = []
-            is_numbered = True  # Default sebagai numbered list
-
             for line in lines:
                 line = line.strip()
                 if not line:
                     continue
 
-                match = re.match(r"^(\d+)\.\s(.+)", line)  # Cek angka + titik + spasi
-                if match:
-                    _, text = match.groups()
-                    numbered_items.append(ListItem(Paragraph(text, answer_style2)))
-                elif line.startswith("- "):  # Bulleted list
-                    is_numbered = False
-                    bullet_items.append(ListItem(Paragraph(line[2:], answer_style2)))
+                if line.startswith("- "):  
+                    bullet_items.append(f"✔️ {line[2:]}")  
                 else:
-                    is_numbered = False
-                    centered_texts.append(Paragraph(line, answer_style1))  # Teks biasa (tanpa bullet & numbering)
+                    bullet_items.append(line)
 
-            # Tambahkan elemen berdasarkan jenisnya
-            if is_numbered and numbered_items:
-                elements.append(ListFlowable(
-                    numbered_items,
-                    bulletType="1",
-                    leftIndent=15,
-                    bulletFormat='%s.',  
-                    bulletFontName="Lato-Regular",  
-                    bulletFontSize=12,  
-                    bulletIndent=5  
-                ))
-                elements.append(Spacer(1, 6))  
-            
-            elif bullet_items:
-                elements.append(ListFlowable(
-                    bullet_items,
-                    bulletType="bullet",
-                    leftIndent=15,
-                    bulletFontName="Lato-Regular",  
-                    bulletFontSize=12,  
-                    bulletIndent=5  
-                ))
-                elements.append(Spacer(1, 6))  
-
-            # Tambahkan teks yang harus rata tengah secara terpisah
-            for centered_text in centered_texts:
-                elements.append(centered_text)
-                elements.append(Spacer(1, 6))
-
+            for item in bullet_items:
+                elements.append(Paragraph(item, answer_style))
+                elements.append(Spacer(1, 4))
         else:
-            answer_style = answer_style1 if idx <= 4 else answer_style2
-            answer = Paragraph(str(value), answer_style)
-            elements.append(answer)
+            elements.append(Paragraph(str(value), answer_style))
 
         elements.append(Spacer(1, 12))
+
+    # Footer dengan garis pemisah opacity rendah
+    elements.append(Spacer(1, 30))
+    elements.append(Table([[""]], colWidths=[500], rowHeights=[1], style=[("BACKGROUND", (0, 0), (-1, -1), LIGHT_GRAY)]))
+    elements.append(Spacer(1, 6))
+    footer_text = Paragraph("Laporan Tim Direktorat Analisis dan Pengembangan Statistik Tahun 2025", ParagraphStyle("Footer", parent=styles["Normal"], fontSize=10, textColor=colors.grey, alignment=TA_CENTER))
+    elements.append(footer_text)
 
     doc.build(elements)
     buffer.seek(0)
