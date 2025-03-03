@@ -21,19 +21,24 @@ creds_dict = json.loads(st.secrets["gdrive_service_account"])
 creds = service_account.Credentials.from_service_account_info(creds_dict)
 drive_service = build("drive", "v3", credentials=creds)
 
+# Registrasi font Lato (pastikan file font tersedia di direktori)
+pdfmetrics.registerFont(TTFont("Lato-Regular", "Lato-Regular.ttf"))
+pdfmetrics.registerFont(TTFont("Lato-Bold", "Lato-Bold.ttf"))
+
 def export_pdf(data, filename):
     buffer = io.BytesIO()
     doc = SimpleDocTemplate(buffer, pagesize=A4, rightMargin=50, leftMargin=50, topMargin=50, bottomMargin=50)
     elements = []
 
     styles = getSampleStyleSheet()
-    title_style = styles["Title"]
-    title_style.alignment = TA_CENTER
-    subtitle_style = styles["Heading2"]
-    subtitle_style.alignment = TA_CENTER
 
-    answer_style1 = ParagraphStyle("answer_style1", parent=styles["Normal"], alignment=TA_CENTER)
-    answer_style2 = ParagraphStyle("answer_style2", parent=styles["Normal"], alignment=TA_JUSTIFY)
+    # Gaya teks dengan font Lato
+    title_style = ParagraphStyle("Title", parent=styles["Title"], fontName="Lato-Bold", alignment=TA_CENTER)
+    subtitle_style = ParagraphStyle("Subtitle", parent=styles["Heading2"], fontName="Lato-Bold", alignment=TA_CENTER)
+
+    # Style untuk jawaban (rata tengah dan justify)
+    answer_style1 = ParagraphStyle("answer_style1", parent=styles["Normal"], fontName="Lato-Regular", fontSize=12, alignment=TA_CENTER)
+    answer_style2 = ParagraphStyle("answer_style2", parent=styles["Normal"], fontName="Lato-Regular", fontSize=12, alignment=TA_JUSTIFY)
 
     title = Paragraph("SPOT Light", title_style)
     subtitle = Paragraph("Summary of Progress & Objectives Tracker", subtitle_style)
@@ -43,7 +48,7 @@ def export_pdf(data, filename):
     elements.append(Spacer(1, 16))
 
     for idx, (key, value) in enumerate(data.items()):
-        question = Paragraph(f"<b>{key}</b>", styles["Heading2"])
+        question = Paragraph(f"<b>{key}</b>", ParagraphStyle("Question", parent=styles["Heading2"], fontName="Lato-Bold"))
         elements.append(question)
         elements.append(Spacer(1, 6))
 
