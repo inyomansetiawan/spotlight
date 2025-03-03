@@ -79,9 +79,9 @@ def export_pdf(data, filename):
 
             # Tambahkan elemen berdasarkan jenisnya
             if is_numbered and numbered_items:
-                elements.append(ListFlowable(numbered_items, bulletType="1", leftIndent=15, bulletFormat='%s.', bulletFontSize=10))
+                elements.append(ListFlowable(numbered_items, bulletType="1", leftIndent=15, bulletFormat='%s.', bulletFontSize=10, bulletFontName="Lato-Regular"))
             elif bullet_items:
-                elements.append(ListFlowable(bullet_items, bulletType="bullet", leftIndent=15))
+                elements.append(ListFlowable(bullet_items, bulletType="bullet", leftIndent=15, bulletFontName="Lato-Regular"))
 
             # Tambahkan teks yang harus rata tengah secara terpisah
             for centered_text in centered_texts:
