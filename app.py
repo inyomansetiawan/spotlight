@@ -67,16 +67,18 @@ def export_pdf(data, filename, logo_path):
         # Style untuk numbered list
         numbering_style = ParagraphStyle(
             "numbering",
-            parent=answer_style2,  # Warisi style utama
-            leftIndent=15
+            leftIndent=15,
+            fontName="Lato-Regular", 
+            fontSize=12
         )
         
         # Style untuk bullet list
         bullet_style = ParagraphStyle(
             "bullet",
-            parent=answer_style2,
             leftIndent=25,  
-            bulletIndent=15
+            bulletIndent=15,
+            fontName="Lato-Regular", 
+            fontSize=12
         )
         
         if isinstance(value, str):
