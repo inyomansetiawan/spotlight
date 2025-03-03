@@ -29,7 +29,7 @@ pdfmetrics.registerFont(TTFont("Lato-Regular", "Lato-Regular.ttf"))
 pdfmetrics.registerFont(TTFont("Lato-Bold", "Lato-Bold.ttf"))
 
 # Warna sesuai request
-TURQUOISE = colors.HexColor("#0a5692")
+TURQUOISE = colors.HexColor("#0ba8ed")
 DARK_BLUE = colors.HexColor("#041c54")
 GOLD = colors.HexColor("#FFD700")
 LIGHT_GRAY = colors.HexColor("#DDDDDD")
@@ -51,7 +51,7 @@ def export_pdf(data, filename, logo_path):
 
     # Header: Logo & Judul
     if logo_path:
-        logo = Image(logo_path, width=120, height=60)  # Sesuaikan ukuran logo
+        logo = Image(logo_path, width=58.4, height=24.6)  # Sesuaikan ukuran logo
         elements.append(logo)  # Tambahkan logo terlebih dahulu
         elements.append(Spacer(1, 10))  # Beri jarak sebelum judul
     
