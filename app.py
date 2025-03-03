@@ -68,67 +68,61 @@ def export_pdf(data, filename, logo_path):
 
         if isinstance(value, str):
             lines = value.split("\n")
-            structured_items = []
-            current_list_item = None
-            current_bullet_item = None
-        
+            bullet_items = []
+            numbered_items = []
+            centered_texts = []
+            is_numbered = True  # Default sebagai numbered list
+
             for line in lines:
                 line = line.strip()
                 if not line:
                     continue
-        
-                numbered_match = re.match(r"^(\d+)\.\s(.+)", line)  # Format "1. teks"
-                bullet_match = re.match(r"^- (.+)", line)  # Format "- teks"
-        
-                if bullet_match:  
-                    if current_bullet_item:
-                        structured_items.append(current_bullet_item)
-                    
-                    bullet_text = bullet_match.group(1)
-                    current_bullet_item = ListItem(Paragraph(bullet_text, answer_style2))
-                    current_bullet_item.sub_items = []
-        
-                elif numbered_match:
-                    number, text = numbered_match.groups()
-                    list_item = ListItem(Paragraph(text, answer_style2))
-        
-                    if current_bullet_item:  
-                        current_bullet_item.sub_items.append(list_item)  
-                    else:
-                        structured_items.append(list_item)
-        
-                else:  
-                    structured_items.append(Paragraph(line, answer_style1))
-        
-            if current_bullet_item:
-                structured_items.append(current_bullet_item)
-        
-            for item in structured_items:
-                if isinstance(item, ListItem) and hasattr(item, "sub_items") and item.sub_items:
-                    elements.append(ListFlowable(
-                        [item] + item.sub_items,
-                        bulletType="bullet" if (item.sub_items and hasattr(item.sub_items[0], "getText") and item.sub_items[0].getText().startswith("-")) else "1",
-                        leftIndent=15,
-                        bulletFontName="Lato-Regular",
-                        bulletFontSize=12,
-                        bulletIndent=5
-                    ))
-                elif isinstance(item, ListItem):
-                    elements.append(ListFlowable(
-                        [item],
-                        bulletType="bullet" if (hasattr(item, "getText") and item.getText().startswith("-")) else "1",
-                        leftIndent=15,
-                        bulletFontName="Lato-Regular",
-                        bulletFontSize=12,
-                        bulletIndent=5
-                    ))
+
+                match = re.match(r"^(\d+)\.\s(.+)", line)  # Cek angka + titik + spasi
+                if match:
+                    _, text = match.groups()
+                    numbered_items.append(ListItem(Paragraph(text, answer_style2)))
+                elif line.startswith("- "):  # Bulleted list
+                    is_numbered = False
+                    bullet_items.append(ListItem(Paragraph(line[2:], answer_style2)))
+                else:
+                    is_numbered = False
+                    centered_texts.append(Paragraph(line, answer_style1))  # Teks biasa (tanpa bullet & numbering)
+
+            # Tambahkan elemen berdasarkan jenisnya
+            if is_numbered and numbered_items:
+                elements.append(ListFlowable(
+                    numbered_items,
+                    bulletType="1",
+                    leftIndent=15,
+                    bulletFormat='%s.',  
+                    bulletFontName="Lato-Regular",  
+                    bulletFontSize=12,  
+                    bulletIndent=5  
+                ))
                 elements.append(Spacer(1, 6))  
-        
+            
+            elif bullet_items:
+                elements.append(ListFlowable(
+                    bullet_items,
+                    bulletType="bullet",
+                    leftIndent=15,
+                    bulletFontName="Lato-Regular",  
+                    bulletFontSize=12,  
+                    bulletIndent=5  
+                ))
+                elements.append(Spacer(1, 6))  
+
+            # Tambahkan teks yang harus rata tengah secara terpisah
+            for centered_text in centered_texts:
+                elements.append(centered_text)
+                elements.append(Spacer(1, 6))
+
         else:
-            answer_style = answer_style1 if len(elements) <= 4 else answer_style2
+            answer_style = answer_style1 if idx <= 4 else answer_style2
             answer = Paragraph(str(value), answer_style)
             elements.append(answer)
-        
+
         elements.append(Spacer(1, 12))
 
     # Footer dengan garis pemisah opacity rendah
