@@ -13,18 +13,25 @@ from googleapiclient.http import MediaIoBaseUpload
 from reportlab.platypus import ListFlowable, ListItem
 
 # Konfigurasi Google Drive (GANTI DENGAN ID FOLDER ANDA)
-FOLDER_ID = "1tg2zQrc2-9aR75a_dmgixnGH7j7Duzpp"
+FOLDER_ID = "1Zvee0AaW9w2p0PLyqQ03bmCdmdt5dX-s"
 
 # Load kredensial dari Streamlit Secrets
 creds_dict = json.loads(st.secrets["gdrive_service_account"])
 creds = service_account.Credentials.from_service_account_info(creds_dict)
 drive_service = build("drive", "v3", credentials=creds)
 
+import io
+from reportlab.lib.pagesizes import A4
+from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
+from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer, ListFlowable, ListItem
+from reportlab.lib.enums import TA_CENTER, TA_JUSTIFY
+
+
 def export_pdf(data, filename):
     buffer = io.BytesIO()
     doc = SimpleDocTemplate(buffer, pagesize=A4, rightMargin=30, leftMargin=30, topMargin=50, bottomMargin=30)
     elements = []
-    
+
     styles = getSampleStyleSheet()
     title_style = styles["Title"]
     title_style.alignment = TA_CENTER
@@ -46,10 +53,30 @@ def export_pdf(data, filename):
         elements.append(question)
         elements.append(Spacer(1, 6))
 
-        # Pisahkan teks berdasarkan newline
-        if isinstance(value, str) and "\n" in value:
-            bullet_items = [ListItem(Paragraph(line.strip(), answer_style2)) for line in value.split("\n") if line.strip()]
-            answer = ListFlowable(bullet_items, bulletType="bullet", leftIndent=20)  # Indentasi rapi
+        if isinstance(value, str):
+            lines = value.split("\n")
+            bullet_items = []
+            numbered_items = []
+            is_numbered = False
+
+            for line in lines:
+                line = line.strip()
+                if not line:
+                    continue
+
+                if line.startswith("- "):  # Bulleted list
+                    bullet_items.append(ListItem(Paragraph(line[2:], answer_style2)))
+                elif line[:2].isdigit() and line[2] == ".":  # Numbered list
+                    is_numbered = True
+                    numbered_items.append(ListItem(Paragraph(line[3:], answer_style2)))
+                else:
+                    bullet_items.append(ListItem(Paragraph(line, answer_style2)))
+
+            if is_numbered:
+                answer = ListFlowable(numbered_items, bulletType="1", leftIndent=20)
+            else:
+                answer = ListFlowable(bullet_items, bulletType="bullet", leftIndent=20)
+
         else:
             answer_style = answer_style1 if idx <= 4 else answer_style2
             answer = Paragraph(str(value), answer_style)
