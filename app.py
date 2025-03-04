@@ -20,7 +20,7 @@ from reportlab.lib import colors
 FOLDER_ID = "1Zvee0AaW9w2p0PLyqQ03bmCdmdt5dX-s"
 
 # Load kredensial dari Streamlit Secrets
-creds_dict = st.secrets["gdrive_service_account"]
+creds_dict = json.loads(st.secrets["gdrive_service_account"])
 creds = service_account.Credentials.from_service_account_info(creds_dict)
 drive_service = build("drive", "v3", credentials=creds)
 
