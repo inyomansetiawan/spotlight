@@ -247,7 +247,8 @@ with st.form("data_form"):
                                         "Usman Bustaman S.Si, M.Sc", 
                                         "Dr. Arham Rivai S.Si, M.Si", 
                                         "Lestyowati Endang Widyantari, S.Si, M.Kesos", 
-                                        "Taulina Anggarani S.Si, MA", 
+                                        "Taulina Anggarani S.Si, MA",
+                                        "Nicky Rizkiansyah, S.ST., ME", 
                                         "Dr. Muchammad Romzi"])
     jumlah_anggota = st.number_input("Jumlah Anggota", min_value=1)
     bulan = st.selectbox("Periode Pelaporan (Bulan)", ["",
