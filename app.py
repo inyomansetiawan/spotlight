@@ -275,8 +275,9 @@ with st.form("data_form"):
     # Hasil Retrospective
     st.subheader("Hasil Retrospektif")
     what_went_well = st.text_area("What went Well?")
-    what_can_be_improved = st.text_area("What can be Improved?")
-    action_points = st.text_area("Action Points")
+    what_can_be_improved = st.text_area("What can be Improved? (Isikan kendala yang dihadapi)")
+    action_points = st.text_area("Action Points (Isikan mengenai solusi atas kendala yang dihadapi)")
+    upcoming_agenda = st.text_area("Upcoming Agenda (Spesifik pada Triwulan 2)")
 
     submitted = st.form_submit_button("Simpan Data")
 
@@ -292,7 +293,8 @@ with st.form("data_form"):
             "Target Triwulanan": target_triwulanan,
             "What went Well?": what_went_well,
             "What can be Improved?": what_can_be_improved,
-            "Action Points": action_points
+            "Action Points": action_points,
+            "Upcoming Agenda": upcoming_agenda
         }
         st.success("Data berhasil disimpan!")
 
