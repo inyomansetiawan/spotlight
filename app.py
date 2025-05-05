@@ -219,7 +219,10 @@ with st.form("data_form"):
                                          "[SAKIP] Tim SAKIP",
                                          "[GEN-AI] Tim Generative AI",
                                          "[CAN] Tim Pengelola Manajemen Perubahan",
-                                         "[MADYA] Tim Penugasan Khusus Tambahan"])
+                                         "[MADYA1] Tim Penugasan Khusus Tambahan (Penyediaan Indikator Visi Indonesia Emas 2045/ IUP)",
+                                         "[MADYA2] Tim Penugasan Khusus Tambahan (Penyusunan Rencana Strategis)",
+                                         "[MADYA3] Tim Penugasan Khusus Tambahan (Penyusunan Pedoman Insight)",
+                                         "[MADYA4] Tim Penugasan Khusus Tambahan (Penyusunan Pedoman Indikator Komposit)"])
     ketua = st.selectbox("Nama Ketua", ["", 
                                         "Erna Yulianingsih SST, M.Appl.Ecmets", 
                                         "Alvina Clarissa SST", 
@@ -237,7 +240,10 @@ with st.form("data_form"):
                                         "Synthia Natalia Kristiani SST", 
                                         "Muhammad Ihsan SST",  
                                         "Putri Wahyu Handayani SST, M.S.E", 
-                                        "Dewi Lestari Amaliah SST, M.B.A."])
+                                        "Dewi Lestari Amaliah SST, M.B.A.",
+                                        "Taulina Anggarani S.Si, MA",
+                                        "Yeshri Rahayu S.Si, M.Sc, MT",
+                                        "Widyayanto Adinugroho S.ST, M.Si"])
     coach = st.selectbox("Nama Coach", ["", 
                                         "Dr. Ambar Dwi Santoso S.Si, M.Si", 
                                         "Indah Budiati SST, M.Si", 
