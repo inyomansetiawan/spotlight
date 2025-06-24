@@ -282,8 +282,8 @@ with st.form("data_form"):
     st.subheader("Hasil Retrospektif")
     what_went_well = st.text_area("What went Well?")
     what_can_be_improved = st.text_area("What can be Improved? (Isikan kendala yang dihadapi)")
-    action_points = st.text_area("Action Points (Isikan mengenai solusi atas kendala yang dihadapi)")
-    upcoming_agenda = st.text_area("Upcoming Agenda (Spesifik pada Triwulan 2)")
+    action_points = st.text_area("Action Points (Isikan mengenai solusi atas kendala yang dihadapi yang telah dilakukan)")
+    upcoming_agenda = st.text_area("Upcoming Agenda (Memuat aktivitas/agenda yang akan dilakukan di bulan berikutnya dan/atau solusi atas kendala yang dihadapi yang akan dilakukan di bulan berikutnya)")
 
     submitted = st.form_submit_button("Simpan Data")
 
